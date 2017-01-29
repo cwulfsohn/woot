@@ -41,20 +41,23 @@ class UserManager(models.Manager):
             errors.append("Password must be 8 characters or more")
         if self.password_not_match(password, confirm_password):
             errors.append("Passwords must match")
+        return errors
+## returns an object with either {errors: list of errors}, or {user: user object}
+    def add_user(self, username, first_name, last_name, email, password, confirm_password, admin_level=0):
+        errors = self.reg_validator(username, first_name, last_name, email, password, confirm_password)
         if User.objects.filter(email=email):
             errors.append("Email already registered")
         if User.objects.filter(username=username):
             errors.append("Username already registered")
-        return errors
-## returns an object with either {errors: list of errors}, or {user: user object}
-    def add_user(self, username, first_name, last_name, email, password, confirm_password):
-        errors = self.reg_validator(username, first_name, last_name, email, password, confirm_password)
         if errors:
             return {'errors': errors}
         else:
-            try:
+            users = User.objects.all()
+            if not users:
+                admin_level = 3
                 hash_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-                user = User(username=username, first_name=first_name, last_name=last_name, email=email, hash_pw=hash_pw)
+            try:
+                user = User(username=username, first_name=first_name, last_name=last_name, email=email, hash_pw=hash_pw, admin_level=admin_level)
                 user.save()
                 return {"user": user}
             except:
@@ -71,11 +74,12 @@ class UserManager(models.Manager):
             return {"errors": ["Invalid email or password"]}
 
 class User(models.Model):
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True, default="user")
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     hash_pw = models.CharField(max_length=255)
+    admin_level = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = UserManager()

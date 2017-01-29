@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class WootAppConfig(AppConfig):
-    name = 'woot_app'
+class HomeConfig(AppConfig):
+    name = 'home'

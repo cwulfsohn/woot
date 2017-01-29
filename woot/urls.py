@@ -18,6 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^', include('apps.login.urls', namespace="login")),
-    url(r'^home/$', include('apps.woot_app.urls', namespace="home")),
+    url(r'^home/$', include('apps.home.urls', namespace="home")),
     url(r'^admin/', admin.site.urls),
 ]

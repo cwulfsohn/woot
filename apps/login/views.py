@@ -16,9 +16,9 @@ def login(request):
                 messages.error(request, error)
             return redirect('/')
         else:
-            request.session[""] = user["user"].username
+            request.session["username"] = user["user"].username
             request.session["id"] = user["user"].id
-            return redirect('books:index')
+            return redirect('home:index')
     else:
         return redirect(reverse('login:index'))
 
@@ -38,6 +38,6 @@ def register(request):
         else:
             request.session["username"] = user["user"].username
             request.session["id"] = user["user"].id
-            return redirect('books:index')
+            return redirect('home:index')
     else:
         return redirect(reverse('login:index'))
