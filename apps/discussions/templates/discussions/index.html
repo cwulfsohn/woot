@@ -2,11 +2,52 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Discussion</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>discussions</h2>
-    <h1>Product</h1>
-    <h1>Product Description</h1> 
+    <h1>Header goes here</h1>
+    <div class="container">
+      <div role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation">
+            <a href="#product" class = "active" aria-controls="product" role="tab" data-toggle="tab">Product Discussion</a>
+          </li>
+          <li role="presentation">
+            <a href="#category" aria-controls="category" role="tab" data-toggle="tab">Other Products to Discuss</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="product">
+            <h2>{{product.name}}</h2>
+            <form action={% url 'discussions:comment' %} method='post'>
+              {% csrf_token %}
+              <input type='hidden' name="product_id" value="{{product.id}}">
+              <textarea name='comment'></textarea>
+              <input type='submit' value='Post'>
+            </form>
+          {% for comment in comments %}
+            <div>
+              <p>{{comment.author.username}}</p>
+            </div>
+            <div>
+              <p>{{comment.content}}</p>
+          </div>
+        {% endfor %}
+          </div>
+          <div role="tabpanel" class="tab-pane" id="category">
+            <h2>change</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(".nav li").click(function() {
+        $(".nav li").removeClass("active")
+        $(this).addClass("active")
+      })
+    </script>
   </body>
 </html>
