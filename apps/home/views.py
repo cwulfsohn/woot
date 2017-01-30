@@ -10,4 +10,9 @@ def dummy(request):
     return redirect(reverse('home:index'))
 
 def add_product(request):
+
+    context = {
+            "categories": Category.objects.all(),
+            "subcategories": Subcategory.objects.all(),
+    }
     return render(request, 'home/add_product.html')
