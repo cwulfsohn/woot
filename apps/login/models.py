@@ -55,7 +55,7 @@ class UserManager(models.Manager):
             users = User.objects.all()
             if not users:
                 admin_level = 3
-                hash_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+            hash_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
             try:
                 user = User(username=username, first_name=first_name, last_name=last_name, email=email, hash_pw=hash_pw, admin_level=admin_level)
                 user.save()
