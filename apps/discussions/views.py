@@ -6,7 +6,7 @@ from ..home.models import *
 def discussion(request):
     user = User.objects.get(id = request.session["id"])
     product = Product.objects.get(id = 1)
-    comments = Comment.objects.filter(product=1)
+    comments = Comment.objects.filter(product=1).order_by("created_at")
     context = {
         'user':user,
         'product':product,
