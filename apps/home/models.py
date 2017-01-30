@@ -41,7 +41,6 @@ class Subcategory(models.Model):
 
 class Product(models.Model):
     description = models.TextField()
-    picture = models.CharField(max_length=255)
     price = models.FloatField()
     rating = models.FloatField(default=None)
     active = models.BooleanField(default=False)
@@ -53,6 +52,12 @@ class Product(models.Model):
     quantity = models.IntegerField()
 
     objects = ProductManager()
+
+class Image(models.Model):
+    image = models.CharField(max_length=255)
+    product = models.ForeignKey(Product, related_name="images")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Feature(models.Model):
     header = models.CharField(max_length = 255)
