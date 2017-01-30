@@ -56,7 +56,7 @@ class Product(models.Model):
     objects = ProductManager()
 
 class Image(models.Model):
-    image = models.CharField(max_length=255)
+    image = models.ImageField(upload_to="apps/home/static/images/", default="images/None/no-img.jpg")
     product = models.ForeignKey(Product, related_name="images")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

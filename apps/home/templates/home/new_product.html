@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $( function() {
+        $( "#datepicker" ).datepicker({
+          changeMonth: true,
+          changeYear: true
+        });
+      } );
+  </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Add a product</h1>
+      <form action="{% url 'home:add_product' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input class="form-control" placeholder="Name" type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" name="description" rows="8" cols="80" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="Subcategory">Subcategory</label>
+          <select class="form-control" name="subcategory">
+            {% for subcategory in subcategories %}
+              <option value="{{subcategory.subcategory}}">{{subcategory.subcategory}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="price">Price</label>
+          <input type="text" class="form-control" name="price" required>
+        </div>
+        <div class="form-group">
+          <label for="list_price">List Price</label>
+          <input type="text" class="form-control" name="list_price" required>
+        </div>
+        <fieldset class="form-group">
+          <legend>Active?</legend>
+          <div class="form-check">
+            <label class="form-check-label">
+              True <input type="radio" class="form-check-input" value="True" name="active">
+            </label>
+            <label class="form-check-label">
+              False <input type="radio" class="form-check-input" value="False" name="active" checked>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset class="form-group">
+          <legend>Daily Deal?</legend>
+          <div class="form-check">
+            <label class="form-check-label">
+              True <input type="radio" class="form-check-input" value="True" name="daily_deal">
+            </label>
+            <label class="form-check-label">
+              False <input type="radio" class="form-check-input" value="False" name="daily_deal" checked>
+            </label>
+          </div>
+        </fieldset>
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input type="text" class="form-control" name="quantity" required>
+        </div>
+        <div class="form-group">
+          <label for="expire_date">Expire Date</label>
+          <input type="text" id="datepicker" class="form-control" name="expire_date" required>
+        </div>
+        <input type="submit" name="Submit" class="btn btn-primary">
+      </form>
+    </div>
+  </body>
+</html>
