@@ -6,5 +6,5 @@ def index(request):
     return render(request, 'home/index.html')
 
 def dummy(request):
-    
+
     return redirect(reverse('home:index'))
