@@ -8,4 +8,6 @@ urlpatterns = [
     url(r'^product/new/add/$', views.add_product, name="add_product"),
     url(r'^product/new/image/(?P<id>\d+)$', views.new_image, name="new_image"),
     url(r'^product/new/image/(?P<id>\d+)/upload$', views.upload_image, name="upload_image"),
+    url(r'^product/add/$', views.add_product, name="add_product"),
+    url(r'^category/(?P<id>\d+)$', views.category, name="category"),
 ]
