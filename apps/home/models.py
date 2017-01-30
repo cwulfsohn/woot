@@ -40,8 +40,10 @@ class Subcategory(models.Model):
     objects = SubcategoryManager()
 
 class Product(models.Model):
+    name = models.CharField(max_length=255, default=None)
     description = models.TextField()
     price = models.FloatField()
+    list_price = models.FloatField(default=None)
     rating = models.FloatField(default=None)
     active = models.BooleanField(default=False)
     expire_date = models.DateTimeField()
