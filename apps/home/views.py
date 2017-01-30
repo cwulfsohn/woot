@@ -5,7 +5,12 @@ from datetime import datetime
 
 # Create your views here.
 def index(request):
-    return render(request, 'home/index.html')
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    context = {'categories': categories,
+               'subcategories': subcategories
+               }
+    return render(request, 'home/index.html', context)
 
 def dummy(request):
 
@@ -53,6 +58,9 @@ def upload_image(request, id):
             return redirect(reverse('home:show', kwargs={'id':id}))
     print "failure"
     return redirect(reverse('home:new_image', kwargs={'id':id}))
+
+def category(request):
+    pass
 
 def show_product(request, id):
     # try:

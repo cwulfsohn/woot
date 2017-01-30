@@ -1,0 +1,50 @@
+.bottom-border {
+  border-bottom: 1px solid #99BA6E
+}
+
+.nav-color {
+  background-color: #7BA740;
+}
+
+
+.white-text{
+  color:#FFFFFF !important;
+}
+
+#main-nav li:first-child {
+  color:#FFFFFF
+}
+
+.navbar .nav > li > a {
+  color: #FFFFFF;
+}
+
+.navbar > a {
+  color: #FFFFFF;
+}
+
+.underline:focus, .underline:hover {
+  text-decoration: underline !important;
+  color: #FFFFFF !important;
+}
+
+.lighter-font {
+  font-weight: 300
+}
+
+.light-font {
+  font-weight: 500
+}
+
+.dropdown-font {
+  color: #000000
+}
+
+#cart {
+  margin: 10px 0px 0px 15px;
+  padding: 0px
+}
+
+.cart {
+  font-size: 2em;
+}
