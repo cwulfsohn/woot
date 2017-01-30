@@ -50,11 +50,26 @@ def new_image(request, id):
 def upload_image(request, id):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
+        print "so far so good"
         if form.is_valid():
+            print "EHHHHH"
             product = Product.objects.get(id=id)
-            m = Image.objects.create(product=product, image = form.cleaned_data['image'])
-            return HttpResponse('image upload success')
+            image = Image.objects.create(product=product, image = form.cleaned_data['image'])
+            return redirect(reverse('home:show'))
+    print "failure"
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
 def category(request):
     pass
+
+def show_product(request, id):
+    # try:
+    product = Product.objects.get(id=id)
+    images = Image.objects.filter(product=product)
+    context = {
+                "product":product,
+                "images":images
+    }
+    return render(request, 'home/show.html', context)
+    # except:
+    #     return redirect(reverse('home:index'))
