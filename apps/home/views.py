@@ -50,7 +50,7 @@ def upload_image(request, id):
             print "EHHHHH"
             product = Product.objects.get(id=id)
             image = Image.objects.create(product=product, image = form.cleaned_data['image'])
-            return redirect(reverse('home:show'))
+            return redirect(reverse('home:show', kwargs={'id':id}))
     print "failure"
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
