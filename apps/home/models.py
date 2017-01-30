@@ -6,6 +6,10 @@ class CategoryManager(models.Manager):
     def home(self):
         pass
 
+class SubcategoryManager(models.Manager):
+    def home(self):
+        pass
+
 class ProductManager(models.Manager):
     def home(self):
         pass
@@ -26,12 +30,18 @@ class Category(models.Model):
     category = models.CharField(max_length=150, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     objects = CategoryManager()
+
+class Subcategory(models.Model):
+    subcategory = models.CharField(max_length=255, unique=True)
+    category = models.ForeignKey(Category, related_name="subcategories")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = SubcategoryManager()
 
 class Product(models.Model):
     description = models.TextField()
-    picture = models.ImageField()
+    picture = models.CharField(max_length=255)
     price = models.FloatField()
     rating = models.FloatField(default=None)
     active = models.BooleanField(default=False)
@@ -39,7 +49,8 @@ class Product(models.Model):
     daily_deal = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(Category, related_name="products")
+    subcategory = models.ForeignKey(Subcategory, related_name="products")
+    quantity = models.IntegerField()
 
     objects = ProductManager()
 
