@@ -17,7 +17,10 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
+
     url(r'^', include('apps.login.urls', namespace="login")),
-    url(r'^home/$', include('apps.home.urls', namespace="home")),
+    url(r'^home/', include('apps.home.urls', namespace="home")),
+    url(r'^discussions/', include('apps.discussions.urls', namespace="discussions")),
+    url(r'^checkout/', include('apps.checkout.urls', namespace="checkout")),
     url(r'^admin/', admin.site.urls),
 ]

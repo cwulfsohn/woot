@@ -16,6 +16,7 @@ def login(request):
                 messages.error(request, error)
             return redirect('/')
         else:
+            request.session['name'] = user["user"].first_name
             request.session["username"] = user["user"].username
             request.session["id"] = user["user"].id
             return redirect('home:index')
@@ -36,8 +37,13 @@ def register(request):
                 messages.error(request, error)
             return redirect(reverse('login:index'))
         else:
+            request.session['name'] = user["user"].first_name
             request.session["username"] = user["user"].username
             request.session["id"] = user["user"].id
             return redirect('home:index')
     else:
         return redirect(reverse('login:index'))
+
+def logout(request):
+    request.session.clear()
+    return redirect(reverse('login:index'))

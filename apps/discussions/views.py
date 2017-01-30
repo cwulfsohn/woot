@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
+from .models import *
 
-# Create your views here.
+def index(request):
+    return render(request, 'discussions/index.html')
+
+def dummy(request):
+    
+    return redirect(reverse('home:dummy'))

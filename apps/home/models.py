@@ -23,7 +23,7 @@ class PurchaseManager(models.Manager):
         pass
 
 class Category(models.Model):
-    category = models.CharField(max_length=150)
+    category = models.CharField(max_length=150, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -57,7 +57,7 @@ class Spec(models.Model):
     spec = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    product = models.ManyToManyField(Product, related_name="product_features")
+    product = models.ManyToManyField(Product, related_name="product_specs")
 
     objects = SpecManager()
 

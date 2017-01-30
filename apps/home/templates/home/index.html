@@ -5,6 +5,9 @@
     <title></title>
   </head>
   <body>
-    <h1> Welcome home.....</h1>
+    <h1> Welcome {{request.session.name}}</h1>
+    <a href="{% url 'login:logout' %}">Log out</a>
+    <a href="{% url 'home:dummy' %}">RUN DUMMY CODE</a>
+
   </body>
 </html>
