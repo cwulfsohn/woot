@@ -13,7 +13,7 @@ class SubcategoryManager(models.Manager):
         pass
 
 class ProductManager(models.Manager):
-    def validate(self, name, description, price, list_price, quantity, expire_date):
+    def validate(self, name, description, price, list_price, quantity, expire_date, deal_date):
         errors = []
         if len(name) < 2:
             errors.append("Name must be at least 2 characters long")
@@ -36,6 +36,10 @@ class ProductManager(models.Manager):
             expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
             if expire_date < datetime.now():
                 errors.append("Date must be after today")
+        if deal_date:
+            deal_date = datetime.strptime(deal_date, "%m/%d/%Y")
+            if Product.objects.filter(deal_date=deal_date):
+                errors.append("Already a deal on that date")
         return errors
 
 class FeatureManager(models.Manager):
@@ -79,6 +83,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     subcategory = models.ForeignKey(Subcategory, related_name="products")
+    deal_date = models.DateTimeField(null=True, blank=True, default=None)
     quantity = models.IntegerField()
 
     objects = ProductManager()
