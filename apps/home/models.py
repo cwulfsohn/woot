@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 from django.db import models
 from ..login.models import User
+import re
+from datetime import datetime
 
 class CategoryManager(models.Manager):
     def home(self):
@@ -11,8 +13,30 @@ class SubcategoryManager(models.Manager):
         pass
 
 class ProductManager(models.Manager):
-    def home(self):
-        pass
+    def validate(self, name, description, price, list_price, quantity, expire_date):
+        errors = []
+        if len(name) < 2:
+            errors.append("Name must be at least 2 characters long")
+        if len(description) < 10:
+            errors.append("Description must be at least 10 characters long")
+        if len(price) < 2:
+            errors.append("Price must be at least 2 characters long")
+        p = re.compile('\d+(\.\d+)?')
+        if not p.match(price):
+            errors.append("Price format is digits.digits (no letters)")
+        if len(list_price) < 2:
+            errors.append("List price must be at least 2 characters long")
+        if not p.match(list_price):
+            errors.append("List price format is digits.digits (no letters)")
+        if not quantity.isdigit():
+            errors.append("Quantity can only be a number")
+        if len(expire_date) < 6:
+            errors.append("Invalid expiration date")
+        else:
+            expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
+            if expire_date < datetime.now():
+                errors.append("Date must be after today")
+        return errors
 
 class FeatureManager(models.Manager):
     def home(self):

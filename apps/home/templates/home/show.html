@@ -12,7 +12,7 @@
     {% load static %}
     <h1>{{product.name}}</h1>
     {% for image in images %}
-    <img src="{% static 'home/images/' %}" alt="{{prouct.name}}">
+    <img src="{% static image.image.name %}" alt="{{product.name}}">
     {% endfor %}
   </body>
 </html>
