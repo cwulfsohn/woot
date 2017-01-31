@@ -3,13 +3,21 @@
   <head>
     <meta charset="utf-8">
     <title>Add Features</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>Features</h1>
-    <h3>Product: {{product.name}}</h3>
+    <div class="container">
+      <div class="page-header">
+        <h2>Features</h2>
+        <h3>Product: {{product.name}}</h3>
+      </div>
+    </div>
+    <div class="container">
     <h4>Current Features</h4>
-    <div>
-    <table>
+    <table class="table table-bordered">
       <thead>
         <tr>
           <th>Title</th>
@@ -28,15 +36,23 @@
       </tbody>
     </table>
     </div>
-    <h4>Add Features</h4>
-    <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
-      {% csrf_token %}
-      <label name="feature_header">Feature Name:</label>
-      <input type="text" name="feature_header">
-      <label name="feature_description">Feature Description:</label>
-      <textarea type="text" name="feature_description"></textarea>
-      <input type="submit" value="Add Feature">
-    </form>
-    <a href="{% url 'home:index' %}">Next</a>
+    <div class="container">
+      <h4>Add Features</h4>
+      <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
+        {% csrf_token %}
+        <div class="form-group">
+          <label name="feature_header">Feature Name:</label>
+          <input type="text" class="form-control" name="feature_header" required placeholder="Feature Header">
+        </div>
+        <div class="form-group">
+          <label name="feature_description">Feature Description:</label>
+          <textarea type="text" class="form-control" name="feature_description" required rows="3" placeholder="Feature Description"></textarea>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add Feature">
+      </form>
+    </div>
+    <div class="container">
+      <a href="{% url 'home:index' %}" class="btn btn-success pull-right">Next</a>
+    </div>
   </body>
 </html>

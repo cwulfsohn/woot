@@ -21,26 +21,28 @@
           </li>
         </ul>
         <div class="tab-content">
-          <div role="tabpanel" class="tab-pane" id="product">
-            <h2>{{product.name}}</h2>
-            <form action={% url 'discussions:comment' %} method='post'>
-              {% csrf_token %}
-              <input type='hidden' name="product_id" value="{{product.id}}">
-              <div class="form-group">
-                <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
-              </div>
-              <div class="form-group">
-                <input type='submit'class="btn btn-primary pull-right" value='Post'>
-              </div>
-            </form>
+          <div role="tabpanel" class="tab-pane active" id="product">
+            <div class='container-fluid'>
+              <h2>{{product.name}}</h2>
+              <form action={% url 'discussions:comment' %} method='post'>
+                {% csrf_token %}
+                <input type='hidden' name="product_id" value="{{product.id}}">
+                <div class="form-group">
+                  <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
+                </div>
+                <div class="form-group">
+                  <input type='submit'class="btn btn-success pull-right" value='Post'>
+                </div>
+              </form>
+            </div>
           {% for comment in comments %}
             <div class="container-fluid">
               <div class="row-fluid">
-                <div class="span2">
-                  <p>{{comment.author.username}}</p>
+                <div class="col-md-2" style="border-style:solid; border-width:2px; min-height: 10rem;">
+                  {{comment.author.username}}
                 </div>
-                <div class="span8">
-                  <p>{{comment.content}}</p>
+                <div class="col-md-10" style="border-style:solid; border-width:2px; min-height: 10rem;">
+                  {{comment.content}}
                 </div>
               </div>
           </div>
@@ -53,6 +55,10 @@
       </div>
     </div>
     <script>
+      $(document).ready(function(e){
+        e.preventDefault()
+        $('#main_product').tab('show')
+      })
       $('#main_product').click(function (e) {
         e.preventDefault()
         $('#other_product').hide()
