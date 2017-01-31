@@ -14,7 +14,7 @@ def login(request):
         if "errors" in user:
             for error in user["errors"]:
                 messages.error(request, error)
-            return redirect('/')
+            return redirect('login:index')
         else:
             request.session['name'] = user["user"].first_name
             request.session["username"] = user["user"].username

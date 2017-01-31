@@ -5,6 +5,7 @@ from ..home.models import *
 
 
 def discussion(request, id):
+    print request.session['id']
     user = User.objects.get(id = request.session["id"])
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
@@ -24,4 +25,4 @@ def comment(request):
         user_id = request.session['id']
         print user_id
         Comment.objects.AddComment(comment, product_id, user_id)
-    return redirect(reverse('discussions:discussion', kwargs={'id':request.session['id']}))
+    return redirect(reverse('discussions:discussion', kwargs={'id':product_id}))
