@@ -9,9 +9,10 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
   <body>
+    {% load static %}
     <h1>{{product.name}}</h1>
     {% for image in images %}
-    <img src="../../../media/{{image.image}}" alt="loofa pic">
+    <img src="{% static image.image.name %}" alt="{{product.name}}">
     {% endfor %}
   </body>
 </html>
