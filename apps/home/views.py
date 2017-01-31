@@ -36,9 +36,12 @@ def new_product(request):
 
 def add_product(request):
     if request.method == "POST":
+        category = request.POST["category"]
+        sub = str(category) + "_subcategory"
         name = request.POST["name"]
         description = request.POST["description"]
-        subcategory = Subcategory.objects.get(subcategory=request.POST["subcategory"])
+        subcategory = Subcategory.objects.get(id=request.POST[sub])
+        print subcategory.subcategory
         price = request.POST["price"]
         list_price = request.POST["list_price"]
         active = request.POST["active"]
