@@ -45,13 +45,21 @@ def add_product(request):
         daily_deal = request.POST["daily_deal"]
         quantity = request.POST["quantity"]
         expire_date = request.POST["expire_date"]
-        errors = Product.objects.validate(name,description,price,list_price,quantity,expire_date)
+        if request.POST["deal_date"]:
+            deal_date=request.POST["deal_date"]
+        else:
+            deal_date=None
+        errors = Product.objects.validate(name,description,price,list_price,quantity,expire_date, deal_date)
         if errors:
             for error in errors:
                 messages.error(request, error)
             return redirect(reverse('home:new_product'))
         expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
         product = Product.objects.create(name=name, description=description, subcategory=subcategory, price=price, list_price=list_price, active=active, daily_deal=daily_deal, quantity=quantity, expire_date=expire_date, rating=3)
+        if deal_date:
+            deal_date = datetime.strptime(deal_date, "%m/%d/%Y")
+            product.deal_date=deal_date
+            product.save()
         return redirect(reverse('home:new_image', kwargs={'id':product.id}))
     else:
         return redirect(reverse('home:new_product'))
