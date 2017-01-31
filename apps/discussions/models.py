@@ -4,8 +4,10 @@ from ..home.models import Product
 from django.db import models
 
 class CommentManager(models.Manager):
-    def home(self):
-        pass
+    def AddComment(self, comment, user_id, product_id):
+        user = User.objects.get(id = user_id)
+        product = Product.objects.get(id = product_id)
+        Comment.objects.create(content = comment, author = user, product = product)
 
 class LikeManager(models.Manager):
     def home(self):
@@ -16,7 +18,6 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, related_name="user_comments")
-    reply_to = models.ForeignKey("self", related_name="replies", default=None)
     product = models.ForeignKey(Product, related_name="product_comments")
 
     objects = CommentManager()

@@ -12,13 +12,28 @@
       $( function() {
         $( "#datepicker" ).datepicker({
           changeMonth: true,
-          changeYear: true
+          changeYear: true,
+          minDate: 0
         });
       } );
+      $(document).ready(function(){
+        $("#category").change ( function () {
+          var targID  = $(this).val ();
+          $("div.style-sub-1").hide ();
+          $('#' + targID).show ();
+        } )
+      })
   </script>
   </head>
   <body>
     <div class="container">
+      {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+          <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
       <h1>Add a product</h1>
       <form action="{% url 'home:add_product' %}" method="post">
         {% csrf_token %}
@@ -31,9 +46,18 @@
           <textarea class="form-control" name="description" rows="8" cols="80" required></textarea>
         </div>
         <div class="form-group">
+          <label for="category">Category</label>
+          <select class="form-control" name="category" id="category">
+            {% for category in categories %}
+              <option value="{{category.category}}">{{category.category}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
           <label for="Subcategory">Subcategory</label>
           <select class="form-control" name="subcategory">
             {% for subcategory in subcategories %}
+              {% if subcategory.category %}
               <option value="{{subcategory.subcategory}}">{{subcategory.subcategory}}</option>
             {% endfor %}
           </select>
