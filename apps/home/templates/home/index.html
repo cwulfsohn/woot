@@ -13,13 +13,8 @@
     <link href="{% static 'home/css/ie10-viewport-bug-workaround.css' %}" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="{% static 'home/css/navbar-fixed-top.css' %}" rel="stylesheet">
-
   </head>
   <body>
-    <h1> Welcome {{request.session.name}}</h1>
-    <a href="{% url 'login:logout' %}">Log out</a>
-    <a href="{% url 'home:dummy' %}">RUN DUMMY CODE</a>
-    <a href="{% url 'discussions:discussion' %}">discussion</a>
     <nav id="main-nav" class="nav-color navbar navbar-default white-text" role="navigation">
       <div class="container">
         <div id="nav-header" class="navbar-header">
@@ -55,12 +50,12 @@
             {% endif %}
           </ul>
         </div>
-        <div id="categories" class="collapse navbar-collapse collapse-buttons row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div id="categories" class="collapse navbar-collapse collapse-buttons .custom-collapse">
           <ul class="nav navbar-nav">
             {% for category in categories %}
             <li class="dropdown">
               <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu collapse">
                 <li><a href="#">Main Deal of the Day for Category goes here</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Subcategories</li>
@@ -72,31 +67,42 @@
               </ul>
             </li>
             {% endfor %}
-            <li><a id="cart" href="#"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a></li>
-          </ul>
+            <li class="dropdown">
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
+              <ul class="dropdown-menu collapse">
+                {% for items in request.session.cart %}
+                <li><a href="#">{{ items }}</a></li>
+                {% endfor %}
+                <li><a href="#"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center" href="#">View your cart</a></li>
+              </ul>
+            </li>
         </div>
       </div>
     </nav><!-- End NAVBAR -->
     <div class="container">
       <div id="daily_deal">
-        <div id="deal-pic" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div id="deal-pic" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           {% load static %}
           {% for image in deal_image %}
           <img class="img-responsive" src="{% static image.image.name %}" alt=""> <!-- use img-responsive -->
           {% endfor %}
         </div>
-        <div id="deal-info" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div id="deal-info" class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           <h3 class="name-font">{{ daily_deal.name }}</h3>
           <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p id="list_price"><span class="list-price">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p>
           <a href="#"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
           <p>&nbsp;</p>
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <p>{{ daily_deal.description }}</p>
+            <p class="col-lg-6 col-md-6 col-sm-12 col-xs-12">{{ daily_deal.description }}</p>
+            <div id="top-comments" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <p>Some dude says some shit</p>
+            <p>Some other dude says some other shit.</p>
+            <button class="btn-lg btn-success">join the discussion</button>
+            </div>
           </div>
-
-
       </div>
     </div> <!-- /container -->
     <div>
@@ -111,6 +117,5 @@
     <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'home/js/ie10-viewport-bug-workaround.js' %}"></script>
-
   </body>
 </html>
