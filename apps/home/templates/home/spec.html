@@ -3,40 +3,69 @@
   <head>
     <meta charset="utf-8">
     <title>Add Specifications</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script>
+    $(document).ready(function(){
+      $('.new_spec_header').hide();
+    })
+    $("#show_header").click(function(){
+      $('.new_spec_header').show();
+    })
+    </script>
   </head>
   <body>
-    <h1>Features</h1>
-    <h3>Product: {{product.name}}</h3>
-    <h4>Current Features</h4>
-    <div>
-    <table>
+    <div class="container">
+      <div class="page-header">
+        <h2>Specifications</h2>
+        <h3>Product: {{product.name}}</h3>
+      </div>
+    </div>
+    <div class="container">
+    <h4>Current Specifications</h4>
+    <table class="table table-bordered">
       <thead>
         <tr>
           <th>Title</th>
-          <th>Feature</th>
+          <th>Specifcation</th>
           <th>Delete</th>
         </tr>
       </thead>
       <tbody>
-        {% for feature in features %}
-        <tr>
-          <td>{{feature.header}}</td>
-          <td>{{feature.feature}}</td>
-          <td><a href="{% url 'home:delete_feature' id=product.id feature_id=feature.id %}">Delete</a></td>
-        </tr>
-        {% endfor %}
       </tbody>
     </table>
     </div>
-    <h4>Add Features</h4>
-    <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
-      {% csrf_token %}
-      <label name="feature_header">Feature Name:</label>
-      <input type="text" name="feature_header">
-      <label name="feature_description">Feature Description:</label>
-      <textarea type="text" name="feature_description"></textarea>
-      <input type="submit" value="Add Feature">
-    </form>
-    <a href="{% url 'home:index' %}">Next</a>
+    <div class="container">
+      <h4>Add Specification</h4>
+      <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
+        {% csrf_token %}
+        <div class="form-group">
+          <select class="form-control" name="specification_select">
+            <option>Select Category</option>
+            {% for category in categories %}
+              <option value="{{category.category}}">{{category.category}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label name="add_spec_header">Add Specification Header</label>
+          <input type="checkbox" id="show_header" value="Add" name="add_spec_header">
+        </div>
+        <div class="form-group">
+          <label name="specification_header" class="new_spec_header">New Specification Header:</label>
+          <input type="text" class="form-control new_spec_header" name="specification_header" required placeholder="Specfication Header">
+        </div>
+        <div class="form-group">
+          <label name="specification_description">Specification Description:</label>
+          <input type="text" class="form-control" name="specification_description" required placeholder="Specification Description">
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add Specification">
+      </form>
+    </div>
+    <div class="container">
+      <a href="{% url 'home:index' %}" class="btn btn-success pull-right">Add Product</a>
+    </div>
   </body>
 </html>

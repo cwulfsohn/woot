@@ -21,6 +21,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, related_name="user_comments")
     product = models.ForeignKey(Product, related_name="product_comments")
+    reply_to = models.ForeignKey("self", null=True, default=None)
 
     objects = CommentManager()
 

@@ -24,4 +24,4 @@ def comment(request):
         user_id = request.session['id']
         print user_id
         Comment.objects.AddComment(comment, product_id, user_id)
-    return redirect(reverse('discussions:discussion'))
+    return redirect(reverse('discussions:discussion', kwargs={'id':request.session['id']}))
