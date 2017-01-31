@@ -13,7 +13,6 @@ def index(request):
     deal_images = Image.objects.filter(product = daily_deal)
     for image in deal_images:
         image.image.name = image.image.name[17:]
-        print image.image.name
     percent_off = 100 * (1 - (daily_deal.price/daily_deal.list_price))
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -83,17 +82,23 @@ def upload_image(request, id):
 def category(request):
     pass
 
+def subcategory(request):
+    pass
+
 def show_product(request, id):
     # try:
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     images = Image.objects.filter(product=product)
     for image in images:
         image.image.name = image.image.name[17:]
-    context = {
-                "product":product,
-                "images":images
-    }
-    return render(request, 'home/show.html', context)
+    context = {'categories': categories,
+               'subcategories': subcategories,
+               'product': product,
+               'images': images,
+               }
+    return render(request, 'home/product.html', context)
     # except:
     #     return redirect(reverse('home:index'))
 
