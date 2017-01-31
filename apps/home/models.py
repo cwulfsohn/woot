@@ -58,6 +58,18 @@ class PurchaseManager(models.Manager):
     def home(self):
         pass
 
+class CommentManager(models.Manager):
+    def AddComment(self, comment, product_id, user_id):
+        user = User.objects.get(id = user_id)
+        print user.id
+        product = Product.objects.get(id = product_id)
+        print product.id
+        Comment.objects.create(content = comment, author = user, product = product)
+
+class LikeManager(models.Manager):
+    def home(self):
+        pass
+
 class Category(models.Model):
     category = models.CharField(max_length=150, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -121,3 +133,22 @@ class Purchase(models.Model):
     product = models.ManyToManyField(Product, related_name="product_purchase")
 
     objects = PurchaseManager()
+
+class Comment(models.Model):
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    author = models.ForeignKey(User, related_name="user_comments")
+    product = models.ForeignKey(Product, related_name="product_comments")
+    reply_to = models.ForeignKey("self", null=True, default=None)
+
+    objects = CommentManager()
+
+class Like(models.Model):
+    like = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, related_name="user_likes")
+    comment = models.ForeignKey(Comment, related_name="comment_likes")
+
+    objects = LikeManager()
