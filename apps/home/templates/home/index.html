@@ -57,8 +57,7 @@
             <li class="dropdown">
               <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#">Main Deal of the Day</a></li>
-                <li><a href="#">For Category goes here</a></li>
+                <li><a href="#">Main Deal of the Day for Category goes here</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Subcategories</li>
                 {% for subcat in subcategories %}
@@ -75,18 +74,32 @@
       </div>
     </nav><!-- End NAVBAR -->
     <div class="container">
-      <a href="{% url 'home:dummy' %}">RUN DUMMY CODE</a>
-
-      More content here...
       <div id="daily_deal">
         <div id="deal-pic" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-          Picture goes here
+          <p>&nbsp;</p>
+          {% load static %}
+          {% for image in deal_image %}
+          <img class="img-responsive" src="{% static image.image.name %}" alt=""> <!-- use img-responsive -->
+          {% endfor %}
         </div>
         <div id="deal-info" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <p>&nbsp;</p>
+          <h3 class="name-font">{{ daily_deal.name }}</h3>
+          <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p id="list_price"><span class="list-price">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p>
+          <a href="#"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
+          <p>&nbsp;</p>
+          <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <p>{{ daily_deal.description }}</p>
+          </div>
+
 
       </div>
     </div> <!-- /container -->
-
+    <div>
+      <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
+      <a href="{% url 'home:dummy' %}">RUN DUMMY CODE</a>
+    </div>
+    More content here...
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
