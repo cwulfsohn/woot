@@ -10,7 +10,6 @@ def index(request):
     subcategories = Subcategory.objects.all()
     daily_deal = Product.objects.get(daily_deal=True)
     daily_deal.price = round(daily_deal.price, 2)
-    print daily_deal.price
     deal_images = Image.objects.filter(product = daily_deal)
     for image in deal_images:
         image.image.name = image.image.name[17:]
@@ -121,17 +120,25 @@ def delete_feature(request, id, feature_id):
     return redirect(reverse('home:features', kwargs={'id':id}))
 
 def specifications(request, id):
-    return render(request, "home/spec.html")
+    product = Product.objects.get(id=id)
+    specifications = Feature.objects.filter(product = id).order_by("-created_at")
+    categories = SpecificationCategories.objects.all()
+    context = {
+        'product':product,
+        'specifications':specifications,
+        'categories':categories,
+    }
+    return render(request, "home/spec.html", context)
 
 def add_specification(request, id):
     if request.method == 'POST':
-        feature_header = request.POST['feature_header']
-        feature_description = request.POST['feature_description']
+        feature_header = request.POST['specification_header']
+        feature_description = request.POST['specification_description']
         product = Product.objects.get(id=id)
         Feature.objects.create(header = feature_header, feature = feature_description, product = product)
     return redirect(reverse('home:features', kwargs={'id':id}))
 
-def delete_specification(request, id, feature_id):
-    delete_feature = Feature.objects.get(id=feature_id)
-    delete_feature.delete()
+def delete_specification(request, id, specification_id):
+    delete_specification = Specification.objects.get(id=specification_id)
+    delete_specification.delete()
     return redirect(reverse('home:features', kwargs={'id':id}))

@@ -68,6 +68,13 @@
     color: #FFF;
 }
 
+@media screen and (min-width: 768px) {
+
+.custom-collapse .collapse{
+            display:block;
+      }
+}
+
 .name-font {
   font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
 }
@@ -83,5 +90,8 @@
 #deal-description p{
   padding-left: 0px;
   margin-left: -15px;
+}
 
+#top-comments {
+  margin-left: 15px
 }
