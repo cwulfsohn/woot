@@ -48,3 +48,40 @@
 .cart {
   font-size: 2em;
 }
+
+.navbar .nav > li.dropdown.open.active > a:hover,
+.navbar .nav > li.dropdown.open > a,
+.navbar .nav > li.dropdown.open > ul.dropdown-menu > li > a:hover
+{
+   color: #fff;
+   background-color: #5A9525;
+   border-color: #fff;
+}
+
+@media (max-width: 767px)
+.navbar-default .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFF;
+}
+
+@media (max-width: 767px)
+.navbar-nav .open .dropdown-menu .dropdown-header, .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFF;
+}
+
+.name-font {
+  font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+}
+
+#list_price {
+  color: #777777;
+}
+
+.list-price {
+  text-decoration: line-through;
+}
+
+#deal-description p{
+  padding-left: 0px;
+  margin-left: -15px;
+
+}

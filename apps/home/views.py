@@ -8,8 +8,19 @@ from django.contrib import messages
 def index(request):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
+    daily_deal = Product.objects.get(daily_deal=True)
+    daily_deal.price = round(daily_deal.price, 2)
+    print daily_deal.price
+    deal_images = Image.objects.filter(product = daily_deal)
+    for image in deal_images:
+        image.image.name = image.image.name[17:]
+        print image.image.name
+    percent_off = 100 * (1 - (daily_deal.price/daily_deal.list_price))
     context = {'categories': categories,
-               'subcategories': subcategories
+               'subcategories': subcategories,
+               'daily_deal': daily_deal,
+               'deal_image': deal_images,
+               'percent_off': percent_off,
                }
     return render(request, 'home/index.html', context)
 
