@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Profile</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <a>Test App</a>
+        <a href="{% url 'dashboard:dashboard' %}">Home</a>
+        <a class="navbar-right" href="{% url 'dashboard:logout' %}">Sign out</a>
+        <a  href="{% url 'dashboard:show' id=request.session.id %}">Profile</a>
+      </div>
+    </nav>
+    {% if messages %}
+      <ul class="messages">
+      {% for message in messages %}
+        <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    <h2>Edit Profile</h2>
+    <div>
+      <h4>Edit Information</h4>
+      <form action="{% url 'dashboard:update' id=user.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="edit_field" value="information">
+        <label for="email">Email Address: </label>
+        <input type="text" name="email" value="{{user.email}}">
+        <label for="first_name">First Name: </label>
+        <input type="text" name="first_name" value="{{user.first_name}}">
+        <label for="last_name">Last Name: </label>
+        <input type="text" name="last_name" value="{{user.last_name}}">
+        <input class="btn btn-success" type="submit" value="Save">
+      </form>
+    </div>
+    <div>
+      <h4>Change Password</h4>
+      <form action="{% url 'dashboard:update' id=user.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="edit_field" value="password">
+        <label for="password">Password: </label>
+        <input type="password" name="password">
+        <label for="confirm_password">Confirm: </label>
+        <input type="password" name="confirm_password">
+        <input class="btn btn-success" type="submit" value="Update Password">
+      </form>
+    </div>
+    <div>
+      <h4>Edit Description</h4>
+      <form action="{% url 'dashboard:update' id=user.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="edit_field" value="description">
+        <label for="description">Description: </label>
+        <textarea name="description" rows="8" cols="80"></textarea>
+        <input class="btn btn-success" type="submit" value="Save">
+      </form>
+    </div>
+  </body>
+</html>
