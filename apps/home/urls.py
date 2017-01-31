@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'^product/add/$', views.add_product, name="add_product"),
     url(r'^category/(?P<id>\d+)$', views.category, name="category"),
     url(r'^subcategory/(?P<id>\d+)$', views.subcategory, name="subcategory"),
+    url(r'^discussion/product/(?P<id>\d+)$', views.discussion, name="discussion"),
+    url(r'^comment$', views.comment, name="comment"),
 ]

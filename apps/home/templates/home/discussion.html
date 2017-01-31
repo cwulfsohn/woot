@@ -24,7 +24,7 @@
           <div role="tabpanel" class="tab-pane active" id="product">
             <div class='container-fluid'>
               <h2>{{product.name}}</h2>
-              <form action={% url 'discussions:comment' %} method='post'>
+              <form action={% url 'home:comment' %} method='post'>
                 {% csrf_token %}
                 <input type='hidden' name="product_id" value="{{product.id}}">
                 <div class="form-group">
