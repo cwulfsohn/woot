@@ -60,8 +60,6 @@ def upload_image(request, id):
             product = Product.objects.get(id=id)
             image = Image.objects.create(product=product, image = form.cleaned_data['image'])
             return redirect(reverse('home:features', kwargs={'id':id}))
-    print "failure"
-            return redirect(reverse('home:show_product', kwargs={'id':id}))
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
 def category(request):
