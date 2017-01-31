@@ -2,9 +2,67 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Discussion</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>discussions</h2>
+    <h1 id="change" >Header goes here</h1>
+    <div class="container">
+      <div role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation">
+            <a href="#product" id = "main_product" class = "active" aria-controls="product" role="tab" data-toggle="tab">Product Discussion</a>
+          </li>
+          <li role="presentation">
+            <a href="#category" id= "other_products" aria-controls="category" role="tab" data-toggle="tab">Category Forum</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane" id="product">
+            <h2>{{product.name}}</h2>
+            <form action={% url 'discussions:comment' %} method='post'>
+              {% csrf_token %}
+              <input type='hidden' name="product_id" value="{{product.id}}">
+              <div class="form-group">
+                <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
+              </div>
+              <div class="form-group">
+                <input type='submit'class="btn btn-primary pull-right" value='Post'>
+              </div>
+            </form>
+          {% for comment in comments %}
+            <div class="container-fluid">
+              <div class="row-fluid">
+                <div class="span2">
+                  <p>{{comment.author.username}}</p>
+                </div>
+                <div class="span8">
+                  <p>{{comment.content}}</p>
+                </div>
+              </div>
+          </div>
+        {% endfor %}
+          </div>
+          <div role="tabpanel" class="tab-pane" id="category">
+            <h1>Category Forum</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $('#main_product').click(function (e) {
+        e.preventDefault()
+        $('#other_product').hide()
+        $(this).tab('show')
+      })
+      $('#other_product').click(function (e) {
+        e.preventDefault()
+        $('#product').hide()
+        $(this).tab('show')
+      })
+    </script>
   </body>
 </html>

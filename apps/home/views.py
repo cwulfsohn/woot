@@ -8,8 +8,19 @@ from django.contrib import messages
 def index(request):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
+    daily_deal = Product.objects.get(daily_deal=True)
+    daily_deal.price = round(daily_deal.price, 2)
+    print daily_deal.price
+    deal_images = Image.objects.filter(product = daily_deal)
+    for image in deal_images:
+        image.image.name = image.image.name[17:]
+        print image.image.name
+    percent_off = 100 * (1 - (daily_deal.price/daily_deal.list_price))
     context = {'categories': categories,
-               'subcategories': subcategories
+               'subcategories': subcategories,
+               'daily_deal': daily_deal,
+               'deal_image': deal_images,
+               'percent_off': percent_off,
                }
     return render(request, 'home/index.html', context)
 
@@ -59,6 +70,8 @@ def upload_image(request, id):
         if form.is_valid():
             product = Product.objects.get(id=id)
             image = Image.objects.create(product=product, image = form.cleaned_data['image'])
+            return redirect(reverse('home:features', kwargs={'id':id}))
+    print "failure"
             return redirect(reverse('home:show_product', kwargs={'id':id}))
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
@@ -78,3 +91,41 @@ def show_product(request, id):
     return render(request, 'home/show.html', context)
     # except:
     #     return redirect(reverse('home:index'))
+
+def features(request, id):
+    product = Product.objects.get(id=id)
+    features = Feature.objects.filter(product = id).order_by("-created_at")
+    context = {
+        'product':product,
+        'features':features
+    }
+    return render(request, "home/features.html", context)
+
+def add_feature(request, id):
+    if request.method == 'POST':
+        feature_header = request.POST['feature_header']
+        feature_description = request.POST['feature_description']
+        product = Product.objects.get(id=id)
+        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def delete_feature(request, id, feature_id):
+    delete_feature = Feature.objects.get(id=feature_id)
+    delete_feature.delete()
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def specifications(request, id):
+    return render(request, "home/spec.html")
+
+def add_specification(request, id):
+    if request.method == 'POST':
+        feature_header = request.POST['feature_header']
+        feature_description = request.POST['feature_description']
+        product = Product.objects.get(id=id)
+        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def delete_specification(request, id, feature_id):
+    delete_feature = Feature.objects.get(id=feature_id)
+    delete_feature.delete()
+    return redirect(reverse('home:features', kwargs={'id':id}))

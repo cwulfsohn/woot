@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Add Features</title>
+  </head>
+  <body>
+    <h1>Features</h1>
+    <h3>Product: {{product.name}}</h3>
+    <h4>Current Features</h4>
+    <div>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Feature</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feature in features %}
+        <tr>
+          <td>{{feature.header}}</td>
+          <td>{{feature.feature}}</td>
+          <td><a href="{% url 'home:delete_feature' id=product.id feature_id=feature.id %}">Delete</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <h4>Add Features</h4>
+    <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
+      {% csrf_token %}
+      <label name="feature_header">Feature Name:</label>
+      <input type="text" name="feature_header">
+      <label name="feature_description">Feature Description:</label>
+      <textarea type="text" name="feature_description"></textarea>
+      <input type="submit" value="Add Feature">
+    </form>
+    <a href="{% url 'home:index' %}">Next</a>
+  </body>
+</html>
