@@ -98,8 +98,8 @@
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <p class="col-lg-6 col-md-6 col-sm-12 col-xs-12">{{ daily_deal.description }}</p>
             <div id="top-comments" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <p>Some dude says some shit</p>
-            <p>Some other dude says some other shit.</p>
+            {% for comment in comments %}
+            <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
             <button class="btn-lg btn-success">join the discussion</button>
             </div>
           </div>

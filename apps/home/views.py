@@ -10,7 +10,7 @@ def index(request):
     subcategories = Subcategory.objects.all()
     daily_deal = Product.objects.get(daily_deal=True)
     daily_deal.price = round(daily_deal.price, 2)
-    print daily_deal.price
+    comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:3]
     deal_images = Image.objects.filter(product = daily_deal)
     for image in deal_images:
         image.image.name = image.image.name[17:]
@@ -21,6 +21,7 @@ def index(request):
                'daily_deal': daily_deal,
                'deal_image': deal_images,
                'percent_off': percent_off,
+               'comments': comments,
                }
     return render(request, 'home/index.html', context)
 
