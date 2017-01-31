@@ -19,7 +19,7 @@
       $(document).ready(function(){
         $("#category").change ( function () {
           var targID  = $(this).val ();
-          $("div.style-sub-1").hide ();
+          $("div.toggle-select").hide ();
           $('#' + targID).show ();
         } )
       })
@@ -49,19 +49,20 @@
           <label for="category">Category</label>
           <select class="form-control" name="category" id="category">
             {% for category in categories %}
-              <option value="{{category.category}}">{{category.category}}</option>
+              <option value="{{category.id}}">{{category.category}}</option>
             {% endfor %}
           </select>
         </div>
-        <div class="form-group">
-          <label for="Subcategory">Subcategory</label>
-          <select class="form-control" name="subcategory">
-            {% for subcategory in subcategories %}
-              {% if subcategory.category %}
+        {% for category in categories %}
+          <div id="{{category.id}}" style="display:none" class="form-group toggle-select" onchange="ChangeDropdowns(this.value)">
+            <label for="Subcategory">Subcategory</label>
+            <select class="form-control" name="subcategory">
+              {% for subcategory in category.subcategories.all %}
               <option value="{{subcategory.subcategory}}">{{subcategory.subcategory}}</option>
-            {% endfor %}
-          </select>
-        </div>
+              {% endfor %}
+            </select>
+          </div>
+        {% endfor %}
         <div class="form-group">
           <label for="price">Price</label>
           <input type="text" class="form-control" name="price" required>
