@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Woot: Daily Deals for Electronics</title>
+    {% load staticfiles %}
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{% static 'home/css/bootstrap.min.css' %}">
+    <link href="{% static 'home/css/styles.css' %}" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="{% static 'home/css/ie10-viewport-bug-workaround.css' %}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'home/css/navbar-fixed-top.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    <nav id="main-nav" class="nav-color navbar navbar-default white-text" role="navigation">
+      <div class="container">
+        <div id="nav-header" class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand lighter-font white-text" href="{% url 'home:index' %}"><span class="white-text h1">woot!</span> Deals & Shenanigans</a>
+        </div>
+        <div class="navbar-collapse bottom-border" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a class="underline lighter-font" href="#">Community</a>
+            </li>
+            {% if request.session.username %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Your Account</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Stuff You've Bought</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'login:logout' %}">Sign Out</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            {% if not request.session.username %}
+            <li>
+              <a href="{% url 'login:index' %}">Sign In</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        <div id="categories" class="collapse navbar-collapse collapse-buttons .custom-collapse">
+          <ul class="nav navbar-nav">
+            {% for category in categories %}
+            <li class="dropdown">
+              <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
+              <ul class="dropdown-menu collapse">
+                <li><a href="#">Main Deal of the Day for Category goes here</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Subcategories</li>
+                {% for subcat in subcategories %}
+                  {% if subcat.category.id == category.id%}
+                    <li><a href="This will link to subcategories"> {{subcat.subcategory}}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+            {% endfor %}
+            <li class="dropdown">
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
+              <ul class="dropdown-menu collapse">
+                {% for items in request.session.cart %}
+                <li><a href="#">{{ items }}</a></li>
+                {% endfor %}
+                <li><a href="#"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center" href="#">View your cart</a></li>
+              </ul>
+            </li>
+        </div>
+      </div>
+    </nav><!-- End NAVBAR -->
+    <div class="container">
+      <div id="product_area">
+        <div id="deal-buy" class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <p>&nbsp;</p>
+          <h3 class="name-font">{{ product.name }}</h3>
+          <p class="name-font h2">${{ product.price|floatformat:2 }}</p>
+          <form class="/add_to_cart" action="index.html" method="post">
+            {% csrf_token %}
+            <select class="" name="quantity">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+            <input class="btn btn-lg btn-warning" type="submit" value="Add To Cart">
+          </form>
+          <p>Shipping: <strong>Standard</strong></p>
+          <hr>
+          <p>Discuss This Deal</p>
+          {% for comment in comments %}
+          <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
+          {% endfor %}
+          <button class="btn-lg btn-success bottom-border">join the discussion</button>
+          <hr>
+          <p>Description:</p>
+          <p>{{ product.description }}</p>
+        </div>
+        <div id="deal-info" class="img-responsive col-lg-8 col-md-8 col-sm-12 col-xs-12">
+          {% load static %}
+          {% for image in images %}
+          <img class="img-responsive" src="{% static image.image.name %}" alt="">
+          {% endfor %}
+        </div>
+      </div>
+    </div> <!-- /container -->
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'home/js/ie10-viewport-bug-workaround.js' %}"></script>
+  </body>
+</html>
