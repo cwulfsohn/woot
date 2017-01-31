@@ -38,10 +38,11 @@ def register(request):
                 messages.error(request, error)
             return redirect(reverse('login:index'))
         else:
-            request.session["admin_level"] = user["user"].admin_level
-            request.session['name'] = user["user"].first_name
-            request.session["username"] = user["user"].username
-            request.session["id"] = user["user"].id
+            if "id" not in request.session:
+                request.session["admin_level"] = user["user"].admin_level
+                request.session['name'] = user["user"].first_name
+                request.session["username"] = user["user"].username
+                request.session["id"] = user["user"].id
             return redirect('home:index')
     else:
         return redirect(reverse('login:index'))
@@ -77,9 +78,9 @@ def update(request, id):
         email = request.POST["email"]
         first_name = request.POST["first_name"]
         last_name = request.POST["last_name"]
-        if "user_level" in request.POST:
-            user_level= request.POST["user_level"]
-            user = User.objects.update_name(username, email, first_name, last_name, id, user_level)
+        if "admin_level" in request.POST:
+            admin_level= request.POST["admin_level"]
+            user = User.objects.update_name(username, email, first_name, last_name, id, admin_level)
         else:
             user = User.objects.update_name(username, email, first_name, last_name, id)
     elif request.POST["edit_field"] == "password":
@@ -89,7 +90,28 @@ def update(request, id):
     if "errors" in user:
         for error in user["errors"]:
             messages.error(request, error)
-            if "user_level" in request.POST:
+            if request.session["admin_level"] == 4:
                 return redirect(reverse("login:edit_admin", kwargs={'id':id}))
-            return redirect(reverse('dashboard:edit'))
-    return redirect(reverse("dashboard:show", kwargs={'id':id}))
+            return redirect(reverse('login:edit'))
+    if request.session["id"] == user["user"].id:
+        request.session["admin_level"] = user["user"].admin_level
+        request.session['name'] = user["user"].first_name
+        request.session["username"] = user["user"].username
+    return redirect(reverse("login:dashboard"))
+
+def delete_user(request, id):
+    if request.session["id"] == id:
+        messages.error(request, "Can't delete yourself")
+    else:
+        User.objects.get(id=id).delete()
+    return redirect(reverse('login:dashboard'))
+
+def edit(request):
+    try:
+        user = User.objects.get(id=request.session['id'])
+    except:
+        redirect(reverse('home:index'))
+    context = {
+            "user":user
+    }
+    return render(request, 'login/edit.html', context)

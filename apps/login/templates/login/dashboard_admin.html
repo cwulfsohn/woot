@@ -9,6 +9,13 @@
   </head>
   <body>
     <h2>Manage Users</h2>
+    {% if messages %}
+      <ul class="messages">
+      {% for message in messages %}
+        <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
     <a class="btn btn-success" href="{% url 'login:new' %}">Add new</a>
     <table class="table table-bordered table-striped">
       <thead>
@@ -18,7 +25,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Created At</th>
-          <th>User Level</th>
+          <th>Admin Level</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -30,8 +37,8 @@
             <td>{{user.first_name}} {{user.last_name}}</td>
             <td>{{user.email}}</td>
             <td>{{user.created_at}}</td>
-            <td>{% if user.user_level == 4 %}admin{% else %}normal{% endif %}</td>
-            <td><a href="{% url 'login:edit_admin' id=user.id %}">edit</a> | <a href="#">remove</a></td>
+            <td>{% if user.admin_level == 4 %}admin{% else %}normal{% endif %}</td>
+            <td><a href="{% url 'login:edit_admin' id=user.id %}">edit</a> | <a href="{% url 'login:delete_user' id=user.id %}">remove</a></td>
           </tr>
         {% endfor %}
       </tbody>
