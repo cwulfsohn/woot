@@ -10,7 +10,6 @@ def index(request):
     subcategories = Subcategory.objects.all()
     daily_deal = Product.objects.get(daily_deal=True)
     daily_deal.price = round(daily_deal.price, 2)
-    print daily_deal.price
     deal_images = Image.objects.filter(product = daily_deal)
     for image in deal_images:
         image.image.name = image.image.name[17:]

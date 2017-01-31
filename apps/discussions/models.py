@@ -23,6 +23,7 @@ class Comment(models.Model):
     product = models.ForeignKey(Product, related_name="product_comments")
     reply_to = models.ForeignKey("self", null=True, default=None)
 
+
     objects = CommentManager()
 
 class Like(models.Model):
