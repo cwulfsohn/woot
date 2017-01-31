@@ -50,7 +50,7 @@ def upload_image(request, id):
             print "EHHHHH"
             product = Product.objects.get(id=id)
             image = Image.objects.create(product=product, image = form.cleaned_data['image'])
-            return redirect(reverse('home:show'))
+            return redirect(reverse('home:features', kwargs={'id':id}))
     print "failure"
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
@@ -65,3 +65,41 @@ def show_product(request, id):
     return render(request, 'home/show.html', context)
     # except:
     #     return redirect(reverse('home:index'))
+
+def features(request, id):
+    product = Product.objects.get(id=id)
+    features = Feature.objects.filter(product = id).order_by("-created_at")
+    context = {
+        'product':product,
+        'features':features
+    }
+    return render(request, "home/features.html", context)
+
+def add_feature(request, id):
+    if request.method == 'POST':
+        feature_header = request.POST['feature_header']
+        feature_description = request.POST['feature_description']
+        product = Product.objects.get(id=id)
+        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def delete_feature(request, id, feature_id):
+    delete_feature = Feature.objects.get(id=feature_id)
+    delete_feature.delete()
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def specifications(request, id):
+    return render(request, "home/spec.html")
+
+def add_specification(request, id):
+    if request.method == 'POST':
+        feature_header = request.POST['feature_header']
+        feature_description = request.POST['feature_description']
+        product = Product.objects.get(id=id)
+        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
+    return redirect(reverse('home:features', kwargs={'id':id}))
+
+def delete_specification(request, id, feature_id):
+    delete_feature = Feature.objects.get(id=feature_id)
+    delete_feature.delete()
+    return redirect(reverse('home:features', kwargs={'id':id}))
