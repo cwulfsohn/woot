@@ -8,7 +8,8 @@ from django.contrib import messages
 def index(request):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
-    daily_deal = Product.objects.get(daily_deal=True)
+    today = datetime.now().date()
+    daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     for image in deal_images:

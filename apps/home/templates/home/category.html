@@ -89,7 +89,7 @@
           <ul>
             <li>All ({{this_category.subcategories.products.count}})</li>
             {% for subcat in this_cat_subcategories %}
-              <li>{{ subcat.subcategory }} ({{subcat.products.count}})
+              <li>{{ subcat.subcategory }} ({{ subcat.products.count }})
             {% endfor %}
           </ul>
         </div>
