@@ -87,7 +87,7 @@
           <p>&nbsp;</p>
           <h3 class="name-font">{{ product.name }}</h3>
           <p class="name-font h2">${{ product.price|floatformat:2 }}</p>
-          <form class="/add_to_cart" action="index.html" method="post">
+          <form class="/add_to_cart" action="{% url 'checkout:add_cart' id=product.id %}" method="post">
             {% csrf_token %}
             <label for="quantity">Quantity:</label>
             <select class="" name="quantity">
