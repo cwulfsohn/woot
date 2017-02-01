@@ -1,0 +1,110 @@
+.bottom-border {
+  border-bottom: 1px solid #99BA6E
+}
+
+.nav-color {
+  background-color: #7BA740;
+}
+
+
+.white-text{
+  color:#FFFFFF !important;
+}
+
+#main-nav li:first-child {
+  color:#FFFFFF
+}
+
+.navbar .nav > li > a {
+  color: #FFFFFF;
+}
+
+.navbar > a {
+  color: #FFFFFF;
+}
+
+.underline:focus, .underline:hover {
+  text-decoration: underline !important;
+  color: #FFFFFF !important;
+}
+
+.lighter-font {
+  font-weight: 100
+}
+
+.light-font {
+  font-weight: 500
+}
+
+.dropdown-font {
+  color: #000000
+}
+
+#cart {
+  margin: 10px 0px 0px 15px;
+  padding: 0px
+}
+
+.cart {
+  font-size: 2em;
+}
+
+.navbar .nav > li.dropdown.open.active > a:hover,
+.navbar .nav > li.dropdown.open > a,
+.navbar .nav > li.dropdown.open > ul.dropdown-menu > li > a:hover
+{
+   color: #fff;
+   background-color: #5A9525;
+   border-color: #fff;
+}
+
+@media (max-width: 767px)
+.navbar-default .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFF;
+}
+
+@media (max-width: 767px)
+.navbar-nav .open .dropdown-menu .dropdown-header, .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFF;
+}
+
+@media screen and (min-width: 768px) {
+
+.custom-collapse .collapse{
+            display:block;
+      }
+}
+
+.name-font {
+  font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+}
+
+.gray_font {
+  color: #777777;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
+#deal-description p{
+  padding-left: 0px;
+  margin-left: -15px;
+}
+
+#top-comments {
+  margin-left: 15px
+}
+
+#deal-info > img {
+  width: 760px;
+  max-height: 700px
+}
+
+#image-description, #image-description img{
+  padding: 0px 0px 5px 0px;
+}
+
+form > span {
+  padding-left: 5px
+}
