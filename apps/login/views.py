@@ -4,13 +4,24 @@ from .models import User
 
 
 def index(request):
+    if 'id' in request.session:
+        return redirect(reverse('home:index'))
     return render(request, 'login/index.html')
 
 def login(request):
     if request.method == "POST":
         email = request.POST['email']
         password = request.POST['password']
+        request.session['login_email'] = email
         user = User.objects.login(email, password)
+        if 'first_name' in request.session:
+            del request.session['first_name']
+        if 'last_name' in request.session:
+            del request.session['last_name']
+        if 'email' in request.session:
+            del request.session['email']
+        if 'username' in request.session:
+            del request.session['username']
         if "errors" in user:
             for error in user["errors"]:
                 messages.error(request, error)
@@ -32,6 +43,12 @@ def register(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
+        request.session['first_name'] = first_name
+        request.session['last_name'] = last_name
+        request.session['email'] = email
+        request.session['username'] = username
+        if 'login_email' in request.session:
+            del request.session['login_email']
         user = User.objects.add_user(username, first_name, last_name, email, password, confirm_password)
         if "errors" in user:
             for error in user["errors"]:

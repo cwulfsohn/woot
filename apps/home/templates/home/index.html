@@ -39,6 +39,10 @@
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
+                {% if request.session.admin_level == 4 %}
+                <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
+                <li class="divider"></li>
+                {% endif %}
                 <li><a href="{% url 'login:logout' %}">Sign Out</a></li>
               </ul>
             </li>
@@ -86,9 +90,7 @@
         <div id="deal-pic" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           {% load static %}
-          {% for image in deal_image %}
-          <img class="img-responsive" src="{% static image.image.name %}" alt=""> <!-- use img-responsive -->
-          {% endfor %}
+          <img class="img-responsive" src="{% static daily_deal.primary_image %}" alt=""> <!-- use img-responsive -->
         </div>
         <div id="deal-info" class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
@@ -102,6 +104,9 @@
             {% for comment in comments %}
             <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
             {% endfor %}
+            {% if not comments %}
+            <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
+            {% endif %}
             <a href="/discussion/product/{{ daily_deal.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
             </div>
           </div>
