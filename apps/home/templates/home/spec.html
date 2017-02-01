@@ -74,5 +74,14 @@
     <div class="container">
       <a href="{% url 'home:show_product' id=product.id%}" class="btn btn-success pull-right">Add Product</a>
     </div>
+    <div class="container">
+      {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+          <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
   </body>
 </html>

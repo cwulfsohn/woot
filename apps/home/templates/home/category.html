@@ -95,10 +95,11 @@
       <div id="product_area" class="col-lg-10 col-md-10 col-sm-6 col-xs-12 ">
         <div id="deal-info" class="img-responsive col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <h3 class="name-font">{{ main_product.name }}</h3>
-          <p class="name-font h2">${{ main_product.price|floatformat:2 }}</p>
+          <p class="name-font h2">${{ main_product.price|floatformat:2 }}  <span class="gray_font h5"><span class="strikethrough">${{ main_product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </span></p>
           <hr>
           <div id="image-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             {% load static %}
+            {% get_static_prefix as STATIC_PREFIX %}
             {% for image in images %}
             <img class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-responsive" src="{% static image.image.name %}" alt="">
             {% endfor %}
@@ -107,11 +108,11 @@
               <p>{{ main_product.description }}</p>
             </div>
           </div>
-          <a href="/product/show/{{ daily_deal.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
+          <a href="/product/show/{{ main_product.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
           <hr>
           {% if comments %}
           {% for comment in comments %}
-          <p><strong>{{ comment.author.username}}</strong>   <a href="/discussion/product/{{ product.id }}"><button class="pull-right btn-lg btn-success bottom-border">join the discussion</button></a></p>
+          <p><strong>{{ comment.author.username}}</strong>   <a href="/discussion/product/{{ main_product.id }}"><button class="pull-right btn-lg btn-success bottom-border">join the discussion</button></a></p>
           <p>{{ comment.content }} </p>
           {% endfor %}
           {% endif %}
@@ -123,8 +124,19 @@
       </div>
       <div id="all_deals">
         <h4 class="text-center"> All {{ this_category.category }} Deals</h4>
-
-      </div>
+        {% for product in all_products %}
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 all_deals">
+        <a href="/product/show/{{ product.id }}">
+          <h4>{{ product.name }}</h4>
+          <h5>Ends {{ product.expire_date }}</h5>
+          {% for key, value in all_images.items %}
+            {% if key == product.id %}
+            <img class="img-responsive all_deals" src="{% static value %}" alt="{{ product.name }}">
+            {% endif %}
+          {% endfor %}
+        </a>
+        </div>
+        {% endfor %}
     </div> <!-- /container -->
     <!-- Bootstrap core JavaScript
     ================================================== -->

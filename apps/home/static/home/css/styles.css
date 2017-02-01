@@ -96,7 +96,23 @@
   margin-left: 15px
 }
 
-.product_image img {
+#deal-info > img {
   width: 760px;
-  height: auto;
+  max-height: 700px
+}
+
+#image-description, #image-description img{
+  padding: 0px 0px 5px 0px;
+}
+
+form > span {
+  padding-left: 5px
+}
+
+.all_deals {
+
+}
+
+.all_deals > img {
+  max-height: 100px;
 }

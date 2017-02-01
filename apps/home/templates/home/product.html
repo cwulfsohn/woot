@@ -84,7 +84,7 @@
         <div id="deal-buy" class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           <h3 class="name-font">{{ product.name }}</h3>
-          <p class="name-font h2">${{ product.price|floatformat:2 }}</p>
+          <p class="name-font h2">${{ product.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
           <form class="/add_to_cart" action="{% url 'checkout:add_cart' id=product.id %}" method="post">
             {% csrf_token %}
             <label for="quantity">Quantity:</label>
@@ -92,18 +92,18 @@
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
-            </select>
+            </select><span>Limit 3 per customer </span>
             <p>Shipping: <strong>Standard</strong></p>
             <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
           </form>
           <hr>
-          <p>Discuss This Deal</p>
+          <h4>Discuss This Deal</h4>
           {% for comment in comments %}
           <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
           {% endfor %}
           <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
           <hr>
-          <p>Description:</p>
+          <h5>Description:</h5>
           <p>{{ product.description }}</p>
         </div>
         <div id="deal-info" class="col-lg-8 col-md-8 col-sm-12 col-xs-12 product_image">
