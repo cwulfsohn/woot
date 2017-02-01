@@ -94,6 +94,7 @@ def category(request, id):
     main_product = ending_soon[0]
     images = Image.objects.filter(product=main_product)
     comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
+    percent_off = 100 * (1 - (main_product.price/main_product.list_price))
     for image in images:
         image.image.name = image.image.name[17:]
     context = {'categories': categories,
@@ -103,6 +104,7 @@ def category(request, id):
                'main_product': main_product,
                'images': images,
                'comments': comments,
+               'percent_off': percent_off,
                }
     return render(request, 'home/category.html', context)
 

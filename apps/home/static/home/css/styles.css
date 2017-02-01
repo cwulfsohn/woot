@@ -100,3 +100,7 @@
   width: 760px;
   height: auto;
 }
+
+#image-description, #image-description img{
+  padding: 0px 0px 5px 0px;
+}
