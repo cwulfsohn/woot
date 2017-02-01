@@ -73,6 +73,40 @@ class UserManager(models.Manager):
         except:
             return {"errors": ["Invalid email or password"]}
 
+    def update_name(self, username, email, first_name, last_name, id, admin_level=0):
+        errors = []
+        if self.email_invalid(email):
+            errors.append("Invalid email")
+        if self.name_invalid(first_name):
+            errors.append("First name must be more than two characters and only letters")
+        if self.name_invalid(last_name):
+            errors.append("Last name must be more than two characters and only letters")
+        if errors:
+            return {'errors': errors}
+        user = User.objects.get(id=id)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.username = username
+        if User.objects.filter(email=email) and user.email != email:
+            return {"errors": ["Email already registered"]}
+        user.email = email
+        if admin_level > 0:
+            user.admin_level = admin_level
+        user.save()
+        return {"user": user}
+
+    def update_password(self, password, confirm_password, id):
+        errors = []
+        if self.password_invalid(password):
+            errors.append("Password must be 8 characters or more")
+        if self.password_not_match(password, confirm_password):
+            errors.append("Passwords must match")
+        if errors:
+            return {'errors': errors}
+        user = User.objects.get(id=id)
+        user.hash_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        return {"user": user}
+
 class User(models.Model):
     username = models.CharField(max_length=255, unique=True, default="user")
     first_name = models.CharField(max_length=255)

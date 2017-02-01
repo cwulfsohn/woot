@@ -15,7 +15,7 @@
     <link href="{% static 'home/css/navbar-fixed-top.css' %}" rel="stylesheet">
   </head>
   <body>
-    <nav id="main-nav" class="nav-color navbar navbar-default white-text" role="navigation">
+    <nav id="main-nav" class="nav-color navbar navbar-default white-text navbar-fixed-top" role="navigation">
       <div class="container">
         <div id="nav-header" class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="navbar">
@@ -56,12 +56,12 @@
             <li class="dropdown">
               <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
               <ul class="dropdown-menu collapse">
-                <li><a href="#">Main Deal of the Day for Category goes here</a></li>
+                <li><a href="{% url 'home:category' id=category.id %}">See all {{ category.category }} deals</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Subcategories</li>
                 {% for subcat in subcategories %}
                   {% if subcat.category.id == category.id%}
-                    <li><a href="This will link to subcategories"> {{subcat.subcategory}}</a></li>
+                    <li><a href="{% url 'home:subcategory' id=subcat.id %}"> {{subcat.subcategory}}</a></li>
                   {% endif %}
                 {% endfor %}
               </ul>
@@ -80,6 +80,7 @@
         </div>
       </div>
     </nav><!-- End NAVBAR -->
+    <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
     <div class="container">
       <div id="daily_deal">
         <div id="deal-pic" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
@@ -92,8 +93,8 @@
         <div id="deal-info" class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           <h3 class="name-font">{{ daily_deal.name }}</h3>
-          <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p id="list_price"><span class="list-price">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p>
-          <a href=""><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
+          <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p>
+          <a href="/product/show/{{ daily_deal.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
           <p>&nbsp;</p>
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <p class="col-lg-6 col-md-6 col-sm-12 col-xs-12">{{ daily_deal.description }}</p>
@@ -101,7 +102,7 @@
             {% for comment in comments %}
             <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
             {% endfor %}
-            <button class="btn-lg btn-success">join the discussion</button>
+            <a href="/discussion/product/{{ daily_deal.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
             </div>
           </div>
       </div>

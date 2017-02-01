@@ -61,9 +61,9 @@
         {% for category in categories %}
           <div id="{{category.id}}" style="display:none" class="form-group toggle-select" onchange="ChangeDropdowns(this.value)">
             <label for="Subcategory">Subcategory</label>
-            <select class="form-control" name="subcategory">
+            <select class="form-control" name="{{category.id}}_subcategory">
               {% for subcategory in category.subcategories.all %}
-              <option value="{{subcategory.subcategory}}">{{subcategory.subcategory}}</option>
+              <option value="{{subcategory.id}}">{{subcategory.subcategory}}</option>
               {% endfor %}
             </select>
           </div>

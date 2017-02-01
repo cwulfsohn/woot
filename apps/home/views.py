@@ -8,9 +8,10 @@ from django.contrib import messages
 def index(request):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
-    daily_deal = Product.objects.get(daily_deal=True)
-    daily_deal.price = round(daily_deal.price, 2)
+    today = datetime.now().date()
+    daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
     deal_images = Image.objects.filter(product = daily_deal)
+    comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     for image in deal_images:
         image.image.name = image.image.name[17:]
     percent_off = 100 * (1 - (daily_deal.price/daily_deal.list_price))
@@ -19,6 +20,7 @@ def index(request):
                'daily_deal': daily_deal,
                'deal_image': deal_images,
                'percent_off': percent_off,
+               'comments': comments,
                }
     return render(request, 'home/index.html', context)
 
@@ -35,9 +37,12 @@ def new_product(request):
 
 def add_product(request):
     if request.method == "POST":
+        category = request.POST["category"]
+        sub = str(category) + "_subcategory"
         name = request.POST["name"]
         description = request.POST["description"]
-        subcategory = Subcategory.objects.get(subcategory=request.POST["subcategory"])
+        subcategory = Subcategory.objects.get(id=request.POST[sub])
+        print subcategory.subcategory
         price = request.POST["price"]
         list_price = request.POST["list_price"]
         active = request.POST["active"]
@@ -79,8 +84,25 @@ def upload_image(request, id):
             return redirect(reverse('home:features', kwargs={'id':id}))
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
-def category(request):
-    pass
+def category(request, id):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    category = Category.objects.get(id = id)
+    this_cat_subcategories = Subcategory.objects.filter(category = category)
+    ending_soon = Product.objects.filter().order_by('expire_date')[:4]
+    main_product = ending_soon[0]
+    images = Image.objects.filter(product=main_product)
+    comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:2]
+    for image in images:
+        image.image.name = image.image.name[17:]
+    context = {'categories': categories,
+               'subcategories': subcategories,
+               'this_category': category,
+               'this_cat_subcategories': this_cat_subcategories,
+               'main_product': main_product,
+               'images': images,
+               }
+    return render(request, 'home/category.html', context)
 
 def subcategory(request):
     pass
@@ -91,12 +113,14 @@ def show_product(request, id):
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     images = Image.objects.filter(product=product)
+    comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     for image in images:
         image.image.name = image.image.name[17:]
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
                'images': images,
+               'comments': comments,
                }
     return render(request, 'home/product.html', context)
     # except:
