@@ -93,7 +93,7 @@
         <div id="deal-info" class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           <h3 class="name-font">{{ daily_deal.name }}</h3>
-          <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p>
+          <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
           <a href="/product/show/{{ daily_deal.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
           <p>&nbsp;</p>
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
