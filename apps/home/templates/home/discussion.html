@@ -52,7 +52,9 @@
             {% for product_category in category %}
               <p>{{product_category.category}}</p>
               {% for subcategory in product_category.subcategories.all %}
-                {% for product in subcategory.products.all %}  
+                {% for product in subcategory.products.all %}
+                {% load static %}
+                <img src="{% static product.primary_image %}" alt="{{product.primary_image}}">
                 <p>{{product.name}}</p>
                 {% endfor %}
               {% endfor %}
