@@ -81,7 +81,10 @@ def upload_image(request, id):
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             product = Product.objects.get(id=id)
-            image = Image.objects.create(product=product, image = form.cleaned_data['image'])
+            product.primary_image = form.cleaned_data['image']
+            product.save()
+            relative_path = product.primary_image.name[17:]
+            Product.objects.filter(id=id).update(primary_image=relative_path)
             return redirect(reverse('home:features', kwargs={'id':id}))
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
@@ -127,8 +130,6 @@ def show_product(request, id):
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
-    for image in images:
-        image.image.name = image.image.name[17:]
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
@@ -218,7 +219,7 @@ def discussion(request, id):
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
     category = Category.objects.filter(subcategories__products__id = id)
-    
+
     context = {
         'user':user,
         'product':product,

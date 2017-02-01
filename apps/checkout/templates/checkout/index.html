@@ -3,11 +3,26 @@
   <head>
     <meta charset="utf-8">
     <title>Checkout</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h2>Shopping Cart ({{request.session.cart|length}} item(s))</h2>
-    {% for product in request.session.cart %}
-      <h3>{{product}}</h3>
-    {% endfor %}
+    <div class="container">
+      <h2>Shopping Cart ({{products|length}} item(s))</h2>
+      <div id="products">
+        <div class="row">
+          <div class="col-sm-6"></div>
+          <p class="col-sm-3">Price</p>
+          <p class="col-sm-3">Quantity</p>
+        </div>
+        {% for product in products %}
+          <div class="row">
+            <p class="col-sm-6">{{product.name}}</p>
+            <p class="col-sm-3">{{product.price}}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   </body>
 </html>
