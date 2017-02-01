@@ -58,6 +58,10 @@ class PurchaseManager(models.Manager):
     def home(self):
         pass
 
+class CartManager(models.Manager):
+    def home(self):
+        pass
+
 class CommentManager(models.Manager):
     def AddComment(self, comment, product_id, user_id):
         user = User.objects.get(id = user_id)
@@ -128,9 +132,22 @@ class Specifications(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    objects = SpecificationManager()
+
+class Cart(models.Model):
+    product = models.ForeignKey(Product, related_name="products_cart")
+    user = models.ForeignKey(User, related_name="users_cart")
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = CartManager()
+
 class Purchase(models.Model):
     user = models.ManyToManyField(User, related_name="user_purchase")
     product = models.ManyToManyField(Product, related_name="product_purchase")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     objects = PurchaseManager()
 

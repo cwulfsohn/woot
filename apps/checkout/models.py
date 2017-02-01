@@ -22,6 +22,6 @@ class Address(models.Model):
     objects = AddressManager()
 
 class CreditCard(models.Model):
-
+    
     objects = CreditCardManager()
 # Create your models here.
