@@ -108,9 +108,8 @@
         </div>
         <div id="deal-info" class="col-lg-8 col-md-8 col-sm-12 col-xs-12 product_image">
           {% load static %}
-          {% for image in images %}
-          <img class="img-responsive" src="{% static image.image.name %}" alt="">
-          {% endfor %}
+
+          <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
         </div>
       </div>
     </div> <!-- /container -->

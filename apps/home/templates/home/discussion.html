@@ -49,7 +49,14 @@
         {% endfor %}
           </div>
           <div role="tabpanel" class="tab-pane" id="category">
-            <h1>Category Forum</h1>
+            {% for product_category in category %}
+              <p>{{product_category.category}}</p>
+              {% for subcategory in product_category.subcategories.all %}
+                {% for product in subcategory.products.all %}  
+                <p>{{product.name}}</p>
+                {% endfor %}
+              {% endfor %}
+            {% endfor %}
           </div>
         </div>
       </div>

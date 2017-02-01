@@ -81,7 +81,10 @@ def upload_image(request, id):
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             product = Product.objects.get(id=id)
-            image = Image.objects.create(product=product, image = form.cleaned_data['image'])
+            product.primary_image = form.cleaned_data['image']
+            product.save()
+            relative_path = product.primary_image.name[17:]
+            Product.objects.filter(id=id).update(primary_image=relative_path)
             return redirect(reverse('home:features', kwargs={'id':id}))
     return redirect(reverse('home:new_image', kwargs={'id':id}))
 
@@ -127,8 +130,6 @@ def show_product(request, id):
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
-    for image in images:
-        image.image.name = image.image.name[17:]
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
@@ -153,8 +154,13 @@ def add_feature(request, id):
     if request.method == 'POST':
         feature_header = request.POST['feature_header']
         feature_description = request.POST['feature_description']
-        product = Product.objects.get(id=id)
-        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
+        if len(feature_header) < 2:
+            messages.error(request, "Feature Header does not fit criteria length")
+        elif len(feature_description) < 2:
+            messages.error(request, "Feature Description does not fit criteria length")
+        else:
+            product = Product.objects.get(id=id)
+            Feature.objects.create(header = feature_header, feature = feature_description, product = product)
     return redirect(reverse('home:features', kwargs={'id':id}))
 
 def delete_feature(request, id, feature_id):
@@ -176,25 +182,31 @@ def specifications(request, id):
 def add_specification(request, id):
     if request.method == 'POST':
         description = request.POST['specification_description']
+        check_category = request.POST['specification_header']
         if len(description) < 2:
+            messages.error(request, "Description deos not fit critera")
             return redirect(reverse('home:specifications', kwargs={'id':id}))
         try:
-            checked =  request.POST['add_spec_header']
-            if checked:
-                category = request.POST['specification_header']
-                SpecificationCategories.objects.create(category = category)
-                category_id = SpecificationCategories.objects.get(category = category)
-                product = Product.objects.get(id = id)
-                Specifications.objects.create(product = product, spec_category=category_id, value=description)
-                print "worked"
-        except:
-            category = request.POST['specification_select']
-            if category == "revert":
+            if SpecificationCategories.objects.get(category = check_category):
+                messages.error(request, "Category is already created")
                 return redirect(reverse('home:specifications', kwargs={'id':id}))
-            else:
-                category_id = SpecificationCategories.objects.get(category = category)
-                product = Product.objects.get(id = id)
-                Specifications.objects.create(product = product, spec_category=category_id, value=description)
+        except:
+            try:
+                checked =  request.POST['add_spec_header']
+                if checked:
+                    category = request.POST['specification_header']
+                    SpecificationCategories.objects.create(category = category)
+                    category_id = SpecificationCategories.objects.get(category = category)
+                    product = Product.objects.get(id = id)
+                    Specifications.objects.create(product = product, spec_category=category_id, value=description)
+            except:
+                category = request.POST['specification_select']
+                if category == "revert":
+                    return redirect(reverse('home:specifications', kwargs={'id':id}))
+                else:
+                    category_id = SpecificationCategories.objects.get(category = category)
+                    product = Product.objects.get(id = id)
+                    Specifications.objects.create(product = product, spec_category=category_id, value=description)
     return redirect(reverse('home:specifications', kwargs={'id':id}))
 
 def delete_specification(request, id, spec_id):
@@ -203,14 +215,16 @@ def delete_specification(request, id, spec_id):
     return redirect(reverse('home:specifications', kwargs={'id':id}))
 
 def discussion(request, id):
-    print request.session['id']
     user = User.objects.get(id = request.session["id"])
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
+    category = Category.objects.filter(subcategories__products__id = id)
+
     context = {
         'user':user,
         'product':product,
-        'comments':comments
+        'comments':comments,
+        'category':category
     }
     return render(request, 'home/discussion.html', context)
 
