@@ -13,8 +13,6 @@ def index(request):
     daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
-    for image in deal_images:
-        image.image.name = image.image.name[17:]
     percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -100,12 +98,6 @@ def category(request, id):
     percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
     all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id)
     all_images = {}
-    for product in all_products:
-        many_images = Image.objects.filter(product=product)
-        for image in many_images:
-            all_images[product.id] = image.image.name[17:]
-    for image in images:
-        image.image.name = image.image.name[17:]
     context = {'categories': categories,
                'subcategories': subcategories,
                'this_category': category,

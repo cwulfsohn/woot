@@ -2,48 +2,111 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/bootstrap.min.css' %}">
+    <link href="{% static 'login/css/styles.css' %}" rel="stylesheet">
+    <title>Woot! Login or Register</title>
   </head>
   <body>
-    {% if messages %}
-      <ul class="messages">
-      {% for message in messages %}
-        <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-    <div>
-      <h1>Log in!</h1>
-      <form action="{% url 'login:login' %}" method="POST">
-        {% csrf_token %}
-        <label for="email">Email: </label>
-        <input type="text" name="email">
-        <label for="password">Password: </label>
-        <input type="password" name="password">
-        <input type="submit" value="Log in">
-      </form>
+    <div class="well nav-color white-text">
+      <p class="h2 text-center">Please Register or Log In <p class="pull-right"><a class="light-font white-text" href="{% url 'home:index' %}">Back to woot!</a></p></p>
     </div>
-    <div>
-      <h1>Register!</h1>
-      <form action="{% url 'login:register' %}" method="POST">
-        {% csrf_token %}
-        <label for="first_name">First Name: </label>
-        <input type="text" name="first_name">
-        <label for="last_name">Last Name: </label>
-        <input type="text" name="last_name">
-        <label for="email">Email: </label>
-        <input type="text" name="email">
-        <label for="username">Username: </label>
-        <input type="text" name="username">
-        <label for="password">Password: </label>
-        <input type="password" name="password">
-        <label for="confirm_password">Confirm: </label>
-        <input type="password" name="confirm_password">
-        <input type="submit" value="Register">
-      </form>
+      <div class="container">
+
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+        <form class="form-horizontal" action="{% url 'login:register' %}" method="POST">
+          {% csrf_token %}
+          <fieldset>
+            <div id="legend">
+              <legend class="">Register</legend>
+            </div>
+            <div class="control-group">
+              <label class="control-label"  for="first_name">First Name: </label>
+              <div class="controls">
+                <input type="text" name="first_name" value="{{ request.session.first_name }}" class="input-xlarge">
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label"  for="last_name">Last Name: </label>
+              <div class="controls">
+                <input type="text" name="last_name" value="{{ request.session.last_name }}" class="input-xlarge">
+              </div>
+            </div>
+            <div class="control-group">
+              <!-- E-mail -->
+              <label class="control-label" for="email">E-mail:</label>
+              <div class="controls">
+                <input type="text" name="email" value="{{ request.session.email }}" class="input-xlarge">
+              </div>
+            </div>
+            <div class="control-group">
+              <!-- E-mail -->
+              <label class="control-label" for="username">Username:</label>
+              <div class="controls">
+                <input type="text" name="username" value="{{ request.session.username }}" class="input-xlarge">
+              </div>
+            </div>
+            <div class="control-group">
+              <!-- Password-->
+              <label class="control-label" for="password">Password:</label>
+              <div class="controls">
+                <input type="password" name="password" placeholder="" class="input-xlarge">
+              </div>
+            </div>
+            <div class="control-group">
+              <!-- Password -->
+              <label class="control-label"  for="confirm_password">Confirm Password:</label>
+              <div class="controls">
+                <input type="password" name="confirm_password" placeholder="" class="input-xlarge">
+              </div>
+              <p class="help-block"></p>
+            </div>
+            <div class="control-group">
+              <!-- Button -->
+              <div class="controls">
+                <button class="btn btn-success">Register</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+        {% if messages %}
+          {% for msg in messages %}
+          <div class="alert-message block-message error">
+            <p class="text-danger">{{ msg }}</p>
+          </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+        <div id="legend">
+          <legend class="">Login</legend>
+        </div>
+        <form class="form-horizontal" action="{% url 'login:login' %}" method="post">
+          {% csrf_token %}
+          <fieldset>
+            <div class="control-group">
+              <label for="email" class="control-label">E-Mail:</label>
+              <div class="controls">
+                <input type="text" name="email" class="input-xlarge" value="{{ request.session.login_email }}">
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="password" class="control-label">Password:</label>
+              <div class="controls">
+                <input type="password" name="password" class="input-xlarge">
+                <p class="help-block"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                <button class="btn btn-success">Login</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
     </div>
   </body>
 </html>
