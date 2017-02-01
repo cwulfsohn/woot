@@ -147,7 +147,7 @@ class Purchase(models.Model):
     user = models.ManyToManyField(User, related_name="user_purchase")
     product = models.ManyToManyField(Product, related_name="product_purchase")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(now_add=True)
 
     objects = PurchaseManager()
 
