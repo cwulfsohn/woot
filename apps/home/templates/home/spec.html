@@ -9,10 +9,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script>
     $(document).ready(function(){
-      $('.new_spec_header').hide();
-    })
-    $("#show_header").click(function(){
-      $('.new_spec_header').show();
+      $('.new_spec_header').hide()
+      $('#show_new_header').click(function(){
+        $('.new_spec_header').toggle()
+      })
     })
     </script>
   </head>
@@ -34,16 +34,23 @@
         </tr>
       </thead>
       <tbody>
+        {% for specification in specifications %}
+          <tr>
+            <td>{{specification.spec_category.category}}</td>
+            <td>{{specification.value}}</td>
+            <td><a href="{% url 'home:delete_specification' id=product.id spec_id=specification.id %}">Delete</a></td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
     </div>
     <div class="container">
       <h4>Add Specification</h4>
-      <form action="{% url 'home:add_feature' id=product.id %}" method='post'>
+      <form action="{% url 'home:add_specification' id=product.id %}" method='post'>
         {% csrf_token %}
         <div class="form-group">
           <select class="form-control" name="specification_select">
-            <option>Select Category</option>
+            <option value="revert">Select Category</option>
             {% for category in categories %}
               <option value="{{category.category}}">{{category.category}}</option>
             {% endfor %}
@@ -51,21 +58,21 @@
         </div>
         <div class="form-group">
           <label name="add_spec_header">Add Specification Category</label>
-          <input type="checkbox" id="show_header" value="Add" name="add_spec_header">
+          <input type="checkbox" id="show_new_header" name="add_spec_header">
         </div>
         <div class="form-group">
           <label name="specification_header" class="new_spec_header">New Specification Header:</label>
-          <input type="text" class="form-control new_spec_header" name="specification_header" required placeholder="Specfication Header">
+          <input type="text" class="form-control new_spec_header" name="specification_header" placeholder="Specfication Header">
         </div>
         <div class="form-group">
           <label name="specification_description">Specification Description:</label>
-          <input type="text" class="form-control" name="specification_description" required placeholder="Specification Description">
+          <input type="text" class="form-control" name="specification_description" placeholder="Specification Description">
         </div>
         <input type="submit" class="btn btn-primary" value="Add Specification">
       </form>
     </div>
     <div class="container">
-      <a href="{% url 'home:index' %}" class="btn btn-success pull-right">Add Product</a>
+      <a href="{% url 'home:show_product' id=product.id%}" class="btn btn-success pull-right">Add Product</a>
     </div>
   </body>
 </html>
