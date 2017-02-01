@@ -125,6 +125,20 @@ form > span {
   margin: auto;
 }
 
+.discussion_all_deals > img {
+  max-height: 200px;
+}
+
+.product_list{
+  border:1px solid black;
+  box-shadow: 1px 1px;
+}
+
+#category_product{
+  display: block;
+  border: 2px solid black;
+}
+
 .no-padding {
   padding: 0px;
 }

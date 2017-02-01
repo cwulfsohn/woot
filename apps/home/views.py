@@ -211,22 +211,41 @@ def discussion(request, id):
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
     category = Category.objects.filter(subcategories__products__id = id)
-
+    main_category = Category.objects.get(subcategories__products__id = id)
     context = {
         'user':user,
         'product':product,
         'comments':comments,
-        'category':category
+        'category':category,
+        'main_category':main_category,
     }
     return render(request, 'home/discussion.html', context)
 
 def comment(request):
     if request.method == 'POST':
         comment = request.POST['comment']
-        print comment
         product_id = request.POST['product_id']
-        print product_id
         user_id = request.session['id']
-        print user_id
         Comment.objects.AddComment(comment, product_id, user_id)
     return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
+def delete_comment(request, id, product_id):
+    delete_comment = Comment.objects.get(id=id)
+    delete_comment.delete()
+    return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
+def rating(request, id):
+    if request.method == 'POST':
+        user = User.objects.get(id = request.session['id'])
+        product = Product.objects.get(id = id)
+        rating = request.POST['rating']
+        Rating.objects.create(rating = rating, user = user, product = product)
+        avg_rating = Rating.objects.filter(product__id = id)
+        count = 0
+        avg_rate = 0
+        for ratings in avg_rating:
+            count += 1
+            avg_rate += ratings.rating
+        product_rating = round(float(avg_rate)/float(count),2)
+        Product.objects.filter(id=id).update(rating = product_rating)
+    return redirect(reverse('home:show_product', kwargs={'id':id}))

@@ -19,5 +19,7 @@ urlpatterns = [
     url(r'^category/(?P<id>\d+)$', views.category, name="category"),
     url(r'^subcategory/(?P<id>\d+)$', views.subcategory, name="subcategory"),
     url(r'^discussion/product/(?P<id>\d+)$', views.discussion, name="discussion"),
+    url(r'^discussion/delete/(?P<id>\d+)/(?P<product_id>\d+)$', views.delete_comment, name="delete_comment"),
     url(r'^comment$', views.comment, name="comment"),
+    url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
 ]

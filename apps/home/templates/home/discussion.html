@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Discussion</title>
+    {% load static %}
+    <link href="{% static 'home/css/styles.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
@@ -14,16 +16,25 @@
       <div role="tabpanel">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation">
-            <a href="#product" id = "main_product" class = "active" aria-controls="product" role="tab" data-toggle="tab">Product Discussion</a>
+            <a href="#product" id = "main_product" class = "active" aria-controls="product" role="tab" data-toggle="tab">{{product.name}} Discussion</a>
           </li>
           <li role="presentation">
-            <a href="#category" id= "other_products" aria-controls="category" role="tab" data-toggle="tab">Category Forum</a>
+            <a href="#category" id= "other_products" aria-controls="category" role="tab" data-toggle="tab">World of {{main_category.category}}</a>
           </li>
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="product">
             <div class='container-fluid'>
-              <h2>{{product.name}}</h2>
+              <div id="all_deals" class='container-fluid'>
+                {% load static %}
+                <a class="all_deals" href="{% url 'home:show_product' id=product.id %}"><img class="img-responsive pull-left" src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
+                <h1>{{product.name}}</h1>
+                <h4>{{product.description}}</h4>
+              </div>
+              <hr>
+              <div class='container-fluid'>
+              <h2>What do you think of the product?</h2>
+            </div>
               <form action={% url 'home:comment' %} method='post'>
                 {% csrf_token %}
                 <input type='hidden' name="product_id" value="{{product.id}}">
@@ -35,6 +46,7 @@
                 </div>
               </form>
             </div>
+            <hr>
           {% for comment in comments %}
             <div class="container-fluid">
               <div class="row-fluid">
@@ -43,6 +55,12 @@
                 </div>
                 <div class="col-md-10" style="border-style:solid; border-width:2px; min-height: 10rem;">
                   {{comment.content}}
+                  {% if user.admin_level == 4 or user.id == comment.author.id %}
+                    <form action="{% url 'home:delete_comment' id=comment.id product_id=product.id %}" method='post'>
+                      {% csrf_token %}
+                      <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
+                    </form>
+                  {% endif %}
                 </div>
               </div>
           </div>
@@ -50,12 +68,19 @@
           </div>
           <div role="tabpanel" class="tab-pane" id="category">
             {% for product_category in category %}
-              <p>{{product_category.category}}</p>
+              <h1>{{product_category.category}}</h1>
+              <hr>
               {% for subcategory in product_category.subcategories.all %}
                 {% for product in subcategory.products.all %}
                 {% load static %}
-                <img src="{% static product.primary_image %}" alt="{{product.primary_image}}">
-                <p>{{product.name}}</p>
+                <div class="container-fluid product_list">
+                  <div class="col-md-2">
+                    <a class="discussion_all_deals" href="{% url 'home:show_product' id=product.id %}"><img class="img-responsive pull-left" src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
+                  </div>
+                  <div class="col-md-10 text-top">
+                    <a href="{% url 'home:discussion' id=product.id %}"><h2>{{product.name}}</h2></a>
+                  </div>
+                  </div>
                 {% endfor %}
               {% endfor %}
             {% endfor %}
