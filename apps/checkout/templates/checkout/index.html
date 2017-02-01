@@ -6,6 +6,8 @@
   </head>
   <body>
     <h2>Shopping Cart ({{request.session.cart|length}} item(s))</h2>
-    
+    {% for product in request.session.cart %}
+      <h3>{{product}}</h3>
+    {% endfor %}
   </body>
 </html>

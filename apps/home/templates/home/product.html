@@ -70,10 +70,8 @@
             <li class="dropdown">
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
               <ul class="dropdown-menu collapse">
-                {% for items in request.session.cart %}
-                <li><a href="#">{{ items }}</a></li>
-                {% endfor %}
-                <li><a href="#"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a href="#">{{ request.session.cart|length }}</a></li>
+                <li><a href="{% url 'checkout:index' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
                 <li><a class="text-center" href="#">View your cart</a></li>
               </ul>
             </li>
