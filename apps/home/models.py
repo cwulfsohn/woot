@@ -42,6 +42,10 @@ class ProductManager(models.Manager):
                 errors.append("Already a deal on that date")
         return errors
 
+    def percent_off(self, product_price, list_price):
+        percent_off = 100 * (1 - (product_price/list_price))
+        return percent_off
+
 class FeatureManager(models.Manager):
     def home(self):
         pass

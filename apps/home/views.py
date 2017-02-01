@@ -15,7 +15,7 @@ def index(request):
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     for image in deal_images:
         image.image.name = image.image.name[17:]
-    percent_off = 100 * (1 - (daily_deal.price/daily_deal.list_price))
+    percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
     context = {'categories': categories,
                'subcategories': subcategories,
                'daily_deal': daily_deal,
@@ -94,7 +94,13 @@ def category(request, id):
     main_product = ending_soon[0]
     images = Image.objects.filter(product=main_product)
     comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
-    percent_off = 100 * (1 - (main_product.price/main_product.list_price))
+    percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
+    all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id)
+    all_images = {}
+    for product in all_products:
+        many_images = Image.objects.filter(product=product)
+        for image in many_images:
+            all_images[product.id] = image.image.name[17:]
     for image in images:
         image.image.name = image.image.name[17:]
     context = {'categories': categories,
@@ -105,6 +111,8 @@ def category(request, id):
                'images': images,
                'comments': comments,
                'percent_off': percent_off,
+               'all_products': all_products,
+               'all_images': all_images,
                }
     return render(request, 'home/category.html', context)
 
@@ -118,6 +126,7 @@ def show_product(request, id):
     product = Product.objects.get(id=id)
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
+    percent_off = Product.objects.percent_off(product.price, product.list_price)
     for image in images:
         image.image.name = image.image.name[17:]
     context = {'categories': categories,
@@ -125,6 +134,7 @@ def show_product(request, id):
                'product': product,
                'images': images,
                'comments': comments,
+               'percent_off': percent_off,
                }
     return render(request, 'home/product.html', context)
     # except:
