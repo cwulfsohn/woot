@@ -3,6 +3,7 @@ from .models import *
 from .forms import ImageUploadForm
 from datetime import datetime
 from django.contrib import messages
+from django.db.models import Count
 
 # Create your views here.
 def index(request):
@@ -86,10 +87,10 @@ def category(request, id):
     subcategories = Subcategory.objects.all()
     category = Category.objects.get(id = id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
-    ending_soon = Product.objects.filter().order_by('expire_date')[:4]
+    ending_soon = Product.objects.filter(subcategory__category=category).order_by('expire_date')[:4]
     main_product = ending_soon[0]
     images = Image.objects.filter(product=main_product)
-    comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:2]
+    comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
     for image in images:
         image.image.name = image.image.name[17:]
     context = {'categories': categories,
@@ -98,6 +99,7 @@ def category(request, id):
                'this_cat_subcategories': this_cat_subcategories,
                'main_product': main_product,
                'images': images,
+               'comments': comments,
                }
     return render(request, 'home/category.html', context)
 
