@@ -110,6 +110,18 @@
           {% load static %}
 
           <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
+          <p>Rate the product</p>
+          <form action="{% url 'home:rating' id=product.id %}" method="post">
+            {% csrf_token %}
+            <select name="rating">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+              <option value=5>5</option>
+            </select>
+            <input type="submit" value="Rate!">
+          </form>
         </div>
       </div>
     </div> <!-- /container -->

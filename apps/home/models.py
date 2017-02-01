@@ -174,3 +174,10 @@ class Like(models.Model):
     comment = models.ForeignKey(Comment, related_name="comment_likes")
 
     objects = LikeManager()
+
+class Rating(models.Model):
+    rating = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, related_name="user_rating")
+    product = models.ForeignKey(Product, related_name="product_rating")
