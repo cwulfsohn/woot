@@ -89,6 +89,7 @@ class Subcategory(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=255, default=None)
+    primary_image = models.ImageField(null=True, default=None)
     description = models.TextField()
     price = models.FloatField()
     list_price = models.FloatField(default=None)
