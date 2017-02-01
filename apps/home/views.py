@@ -126,7 +126,7 @@ def delete_feature(request, id, feature_id):
 
 def specifications(request, id):
     product = Product.objects.get(id=id)
-    specifications = Feature.objects.filter(product = id).order_by("-created_at")
+    specifications = Specifications.objects.filter(product = id).order_by("-created_at")
     categories = SpecificationCategories.objects.all()
     context = {
         'product':product,
@@ -137,16 +137,32 @@ def specifications(request, id):
 
 def add_specification(request, id):
     if request.method == 'POST':
-        feature_header = request.POST['specification_header']
-        feature_description = request.POST['specification_description']
-        product = Product.objects.get(id=id)
-        Feature.objects.create(header = feature_header, feature = feature_description, product = product)
-    return redirect(reverse('home:features', kwargs={'id':id}))
+        description = request.POST['specification_description']
+        if len(description) < 2:
+            return redirect(reverse('home:specifications', kwargs={'id':id}))
+        try:
+            checked =  request.POST['add_spec_header']
+            if checked:
+                category = request.POST['specification_header']
+                SpecificationCategories.objects.create(category = category)
+                category_id = SpecificationCategories.objects.get(category = category)
+                product = Product.objects.get(id = id)
+                Specifications.objects.create(product = product, spec_category=category_id, value=description)
+                print "worked"
+        except:
+            category = request.POST['specification_select']
+            if category == "revert":
+                return redirect(reverse('home:specifications', kwargs={'id':id}))
+            else:
+                category_id = SpecificationCategories.objects.get(category = category)
+                product = Product.objects.get(id = id)
+                Specifications.objects.create(product = product, spec_category=category_id, value=description)
+    return redirect(reverse('home:specifications', kwargs={'id':id}))
 
-def delete_specification(request, id, specification_id):
-    delete_specification = Specification.objects.get(id=specification_id)
+def delete_specification(request, id, spec_id):
+    delete_specification = Specifications.objects.get(id=spec_id)
     delete_specification.delete()
-    return redirect(reverse('home:features', kwargs={'id':id}))
+    return redirect(reverse('home:specifications', kwargs={'id':id}))
 
 def discussion(request, id):
     print request.session['id']
