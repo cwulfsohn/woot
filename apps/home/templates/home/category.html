@@ -39,6 +39,10 @@
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
+                {% if request.session.admin_level == 4 %}
+                <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
+                <li class="divider"></li>
+                {% endif %}
                 <li><a href="{% url 'login:logout' %}">Sign Out</a></li>
               </ul>
             </li>
@@ -99,10 +103,8 @@
           <hr>
           <div id="image-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             {% load static %}
-            {% get_static_prefix as STATIC_PREFIX %}
-            {% for image in images %}
-            <img class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-responsive" src="{% static image.image.name %}" alt="">
-            {% endfor %}
+
+            <img class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-responsive" src="{% static main_product.primary_image %}" alt="">
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
               <p>Description:</p>
               <p>{{ main_product.description }}</p>
@@ -117,7 +119,7 @@
           {% endfor %}
           {% endif %}
           {% if not comments %}
-          <p>No quality posts yet? WHAT? Somebody help fix that by saying something cool.</p>
+          <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
           {% endif %}
           <hr>
         </div>
@@ -125,17 +127,17 @@
       <div id="all_deals">
         <h4 class="text-center"> All {{ this_category.category }} Deals</h4>
         {% for product in all_products %}
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 all_deals">
         <a href="/product/show/{{ product.id }}">
-          <h4>{{ product.name }}</h4>
-          <h5>Ends {{ product.expire_date }}</h5>
-          {% for key, value in all_images.items %}
-            {% if key == product.id %}
-            <img class="img-responsive all_deals" src="{% static value %}" alt="{{ product.name }}">
-            {% endif %}
-          {% endfor %}
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 panel panel-success text-center all_deals no-padding">
+              <div class="panel-heading">
+                <h4>{{ product.name }}</h4>
+                <h5>Ends {{ product.expire_date }}</h5>
+              </div>
+              <div class="panel-body">
+                <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
+              </div>
+          </div>
         </a>
-        </div>
         {% endfor %}
     </div> <!-- /container -->
     <!-- Bootstrap core JavaScript

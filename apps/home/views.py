@@ -13,8 +13,6 @@ def index(request):
     daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
-    for image in deal_images:
-        image.image.name = image.image.name[17:]
     percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -100,12 +98,6 @@ def category(request, id):
     percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
     all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id)
     all_images = {}
-    for product in all_products:
-        many_images = Image.objects.filter(product=product)
-        for image in many_images:
-            all_images[product.id] = image.image.name[17:]
-    for image in images:
-        image.image.name = image.image.name[17:]
     context = {'categories': categories,
                'subcategories': subcategories,
                'this_category': category,
@@ -219,22 +211,41 @@ def discussion(request, id):
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
     category = Category.objects.filter(subcategories__products__id = id)
-
+    main_category = Category.objects.get(subcategories__products__id = id)
     context = {
         'user':user,
         'product':product,
         'comments':comments,
-        'category':category
+        'category':category,
+        'main_category':main_category,
     }
     return render(request, 'home/discussion.html', context)
 
 def comment(request):
     if request.method == 'POST':
         comment = request.POST['comment']
-        print comment
         product_id = request.POST['product_id']
-        print product_id
         user_id = request.session['id']
-        print user_id
         Comment.objects.AddComment(comment, product_id, user_id)
     return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
+def delete_comment(request, id, product_id):
+    delete_comment = Comment.objects.get(id=id)
+    delete_comment.delete()
+    return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
+def rating(request, id):
+    if request.method == 'POST':
+        user = User.objects.get(id = request.session['id'])
+        product = Product.objects.get(id = id)
+        rating = request.POST['rating']
+        Rating.objects.create(rating = rating, user = user, product = product)
+        avg_rating = Rating.objects.filter(product__id = id)
+        count = 0
+        avg_rate = 0
+        for ratings in avg_rating:
+            count += 1
+            avg_rate += ratings.rating
+        product_rating = round(float(avg_rate)/float(count),2)
+        Product.objects.filter(id=id).update(rating = product_rating)
+    return redirect(reverse('home:show_product', kwargs={'id':id}))

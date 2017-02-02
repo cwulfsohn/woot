@@ -15,9 +15,11 @@ urlpatterns = [
     url(r'^product/new/specifications/(?P<id>\d+)$', views.specifications, name="specifications"),
     url(r'^product/new/add_specification/(?P<id>\d+)$', views.add_specification, name="add_specification"),
     url(r'^product/new/delete_specification/(?P<id>\d+)/(?P<spec_id>\d+)$', views.delete_specification, name="delete_specification"),
-    url(r'^product/add/$', views.add_product, name="add_product"),
+    url(r'^product/new/$', views.new_product, name="new_product"),
     url(r'^category/(?P<id>\d+)$', views.category, name="category"),
     url(r'^subcategory/(?P<id>\d+)$', views.subcategory, name="subcategory"),
     url(r'^discussion/product/(?P<id>\d+)$', views.discussion, name="discussion"),
+    url(r'^discussion/delete/(?P<id>\d+)/(?P<product_id>\d+)$', views.delete_comment, name="delete_comment"),
     url(r'^comment$', views.comment, name="comment"),
+    url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
 ]

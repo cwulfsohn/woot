@@ -39,6 +39,10 @@
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
+                {% if request.session.admin_level == 4 %}
+                <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
+                <li class="divider"></li>
+                {% endif %}
                 <li><a href="{% url 'login:logout' %}">Sign Out</a></li>
               </ul>
             </li>
@@ -101,6 +105,9 @@
           {% for comment in comments %}
           <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
           {% endfor %}
+          {% if not comments %}
+          <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
+          {% endif %}
           <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
           <hr>
           <h5>Description:</h5>
@@ -110,6 +117,18 @@
           {% load static %}
 
           <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
+          <p>Rate the product</p>
+          <form action="{% url 'home:rating' id=product.id %}" method="post">
+            {% csrf_token %}
+            <select name="rating">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+              <option value=5>5</option>
+            </select>
+            <input type="submit" value="Rate!">
+          </form>
         </div>
       </div>
     </div> <!-- /container -->
