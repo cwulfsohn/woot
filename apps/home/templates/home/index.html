@@ -87,6 +87,7 @@
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
     <div class="container">
       <div id="daily_deal">
+        <h3 class="text-center col-xs-12">Deal of the day for today, {{ today }}:</h3>
         <div id="deal-pic" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           {% load static %}
@@ -99,24 +100,22 @@
           <a href="/product/show/{{ daily_deal.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
           <p>&nbsp;</p>
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <hr>
+            <h5 class="row">Description:</h5>
             <p class="col-lg-6 col-md-6 col-sm-12 col-xs-12">{{ daily_deal.description }}</p>
             <div id="top-comments" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            {% for comment in comments %}
-            <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
-            {% endfor %}
-            {% if not comments %}
-            <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
-            {% endif %}
-            <a href="/discussion/product/{{ daily_deal.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
+              {% for comment in comments %}
+              <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
+              {% endfor %}
+              {% if not comments %}
+              <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
+              {% endif %}
+              <a href="/discussion/product/{{ daily_deal.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
             </div>
           </div>
+        </div>
       </div>
     </div> <!-- /container -->
-    <div>
-      <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
-      <a href="{% url 'home:dummy' %}">RUN DUMMY CODE</a>
-    </div>
-    More content here...
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
