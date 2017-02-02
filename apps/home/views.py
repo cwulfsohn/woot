@@ -92,11 +92,18 @@ def category(request, id):
     category = Category.objects.get(id = id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
     ending_soon = Product.objects.filter(subcategory__category=category).order_by('expire_date')[:4]
-    main_product = ending_soon[0]
-    images = Image.objects.filter(product=main_product)
-    comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
-    percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
-    all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id)
+    if ending_soon:
+        main_product = ending_soon[0]
+        images = Image.objects.filter(product=main_product)
+        comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
+        percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
+        all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id).order_by('expire_date')
+    else:
+        all_products = Product.objects.filter(subcategory__category=category).order_by('expire_date')
+        main_product = False
+        images = False
+        comments = False
+        percent_off = False
     all_images = {}
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -111,8 +118,21 @@ def category(request, id):
                }
     return render(request, 'home/category.html', context)
 
-def subcategory(request):
-    pass
+def subcategory(request, id):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    subcategory = Subcategory.objects.get(id = id)
+    category = Category.objects.get(id = subcategory.category_id)
+    this_cat_subcategories = Subcategory.objects.filter(category = category)
+    all_products = Product.objects.filter(subcategory = subcategory).order_by('expire_date')
+    context = {'categories': categories,
+               'subcategories': subcategories,
+               'category': category,
+               'subcategory': subcategory,
+               'this_cat_subcategories': this_cat_subcategories,
+               'all_products': all_products,
+               }
+    return render(request, 'home/subcategory.html', context)
 
 def show_product(request, id):
     # try:
@@ -249,3 +269,66 @@ def rating(request, id):
         product_rating = round(float(avg_rate)/float(count),2)
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
+
+def manage_products(request):
+    if 'admin_level' not in request.session:
+        return redirect('home:index')
+    all_products = Product.objects.all()
+    context = {'all_products': all_products}
+    return render(request, 'home/product_dashboard.html', context)
+
+def edit_product(request, id):
+    if 'admin_level' not in request.session:
+        return redirect('home:index')
+    product = Product.objects.get(id = id)
+    current_subcategory = Subcategory.objects.get(id = product.subcategory.id)
+    current_category = Category.objects.get(id = current_subcategory.category.id)
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    product.expire_date = datetime.strftime(product.expire_date, "%m/%d/%Y")
+    if product.deal_date:
+        product.deal_date = datetime.strftime(product.deal_date, "%m/%d/%Y")
+    context = {'product': product,
+               'current_subcategory': current_subcategory,
+               'current_category': current_category,
+               'categories': categories,
+               'subcategories': subcategories,
+               }
+    return render(request, 'home/edit_product.html', context)
+
+def update_product(request, id):
+    if 'admin_level' not in request.session:
+        return redirect('home:index')
+    if request.method == "POST":
+
+        name = request.POST["name"]
+        description = request.POST["description"]
+        category = request.POST["category"]
+        sub = str(category) + "_subcategory"
+        subcategory = Subcategory.objects.get(id=request.POST[sub])
+        price = request.POST["price"]
+        list_price = request.POST["list_price"]
+        active = request.POST["active"]
+        daily_deal = request.POST["daily_deal"]
+        if request.POST["deal_date"]:
+            deal_date=request.POST["deal_date"]
+        else:
+            deal_date=None
+        quantity = request.POST["quantity"]
+        expire_date = request.POST["expire_date"]
+        primary_image = request.POST["primary_image"]
+        errors = Product.objects.validate(name,description,price,list_price,quantity,expire_date, deal_date, id)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect(reverse('home:edit_product', kwargs={'id':id}))
+        if deal_date:
+            deal_date = datetime.strptime(deal_date, "%m/%d/%Y")
+        expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
+        Product.objects.filter(id=id).update(name=name, description=description, subcategory=subcategory, price=price, list_price=list_price, active=active, daily_deal=daily_deal, quantity=quantity, expire_date=expire_date, deal_date=deal_date, primary_image=primary_image)
+        message = "Product Successfully Updated!"
+        messages.success(request, message)
+        return redirect('home:manage_products')
+
+def delete_product(request, id):
+    pass

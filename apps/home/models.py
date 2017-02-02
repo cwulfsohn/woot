@@ -13,7 +13,7 @@ class SubcategoryManager(models.Manager):
         pass
 
 class ProductManager(models.Manager):
-    def validate(self, name, description, price, list_price, quantity, expire_date, deal_date):
+    def validate(self, name, description, price, list_price, quantity, expire_date, deal_date, id):
         errors = []
         if len(name) < 2:
             errors.append("Name must be at least 2 characters long")
@@ -38,8 +38,12 @@ class ProductManager(models.Manager):
                 errors.append("Date must be after today")
         if deal_date:
             deal_date = datetime.strptime(deal_date, "%m/%d/%Y")
-            if Product.objects.filter(deal_date=deal_date):
-                errors.append("Already a deal on that date")
+            if id:
+                if Product.objects.filter(deal_date=deal_date).exclude(id=id):
+                    errors.append("Already a deal on that date")
+            else:
+                if Product.objects.filter(deal_date=deal_date):
+                    errors.append("Already a deal on that date")
         return errors
 
     def percent_off(self, product_price, list_price):
