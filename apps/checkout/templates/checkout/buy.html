@@ -10,47 +10,57 @@
   </head>
   <body>
     <div class="container">
-    <h1>Review</h1>
+      <h1>Review</h1>
       <div class="row">
         <h3 class="col-sm-3">Selected Address:</h3>
         <div class="col-sm-6">
         {% if address %}
-        <p>{{address.first_name}} {{address.last_name}}</p>
-        <p>{{address.address}}, {{address.unit}}</p>
-        <p>{{address.city}}, {{address.state}} {{address.zip_code}}</p>
-        <p>{{address.country}}</p>
-      </div>
+          <p>{{address.first_name}} {{address.last_name}}</p>
+          <p>{{address.address}}, {{address.unit}}</p>
+          <p>{{address.city}}, {{address.state}} {{address.zip_code}}</p>
+          <p>{{address.country}}</p>
         {% else %}
           <h3>No address selected</h3>
         {% endif %}
-        <h4 class="col-sm-3"><a href="{% url 'checkout:address' %}">Change</a></h4>
+        </div>
+        <div class="col-sm-3">
+          <h4><a href="{% url 'checkout:address' %}">Change</a></h4>
+        </div>
       </div>
       <div class="row">
         <h3 class="col-sm-3">Selected Payment:</h3>
-        <h5 class="col-sm-6">
-          {% if card %}
+        {% if card %}
+          <h5 class="col-sm-6">
             Card ending in ****{{card.last_four}}
-          {% else %}
-            No Card Selected
-          {% endif %}
-        </h5>
+          </h5>
+        {% else %}
+            <h3 class="col-sm-6">No card selected</h3>
+        {% endif %}
         <h4 class="col-sm-3"><a href="{% url 'checkout:billing' %}">Change</a></h4>
       </div>
-      <div class="row">
-        <h3 class="col-sm-3">Review Cart:</h3>
+      <h3 >Review Cart:</h3>
         {% for product in cart_products %}
-          <div class="col-sm-9 row">
-            <h4 class="col-sm-4">PictureHERE</h4>
-            <h4 class="col-sm-4">{{product.name}} x {{product.quantity}}</h4>
-            <h4 class="col-sm-4">{{product.price|floatformat:2}}</h4>
+        <div class="row">
+          <div class="col-sm-3">
+          </div>
+            {% load static %}
+            <div class="col-sm-3"><img class="col-sm-12" src="{% static product.primary_image %}"></div>
+            <div class="col-sm-3"><h4>{{product.name}} x {{product.quantity}}</h4></div>
+            <div class="col-sm-3"><h4>{{product.price|floatformat:2}}</h4></div>
           </div>
         {% endfor %}
-      </div>
       <div class="row">
         <h3 class="col-sm-3">Total</h3>
-        <h3 class="col-sm-3">{{total}}</h3>
+        <h3 class="col-sm-3">{{total|floatformat:2}}</h3>
       </div>
-      <button class="btn btn-success" type="button" name="button">Purchase</button>
+      {% if address and card %}
+        <form action="{% url 'checkout:purchase' %}" method="post">
+          {% csrf_token %}
+          <input class="btn btn-success" type="submit" value="Purchase">
+        </form>
+      {% else %}
+        <p class="btn btn-danger">Must select card and address before checkout</p>
+      {% endif %}
     </div>
   </body>
 </html>

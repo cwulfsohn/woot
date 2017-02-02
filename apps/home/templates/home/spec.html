@@ -3,15 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Add Specifications</title>
+    {% load staticfiles %}
+    <script src="{% static 'home/css/style.css' %}"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script>
     $(document).ready(function(){
-      $('.new_spec_header').hide()
       $('#show_new_header').click(function(){
-        $('.new_spec_header').toggle()
+        $('.new_spec_header').toggleClass('hidden');
       })
     })
     </script>
@@ -61,9 +62,9 @@
           <label name="add_spec_header">Add Specification Category</label>
           <input type="checkbox" id="show_new_header" name="add_spec_header">
         </div>
-        <div class="form-group">
-          <label name="specification_header" class="new_spec_header">New Specification Header:</label>
-          <input type="text" class="form-control new_spec_header" name="specification_header" placeholder="Specfication Header">
+        <div id='div_hide' class="form-group">
+          <label name="specification_header" id="label_hide" class="new_spec_header hidden">New Specification Header:</label>
+          <input type="text" class="form-control new_spec_header hidden" id="input_hide" name="specification_header" placeholder="Specfication Header">
         </div>
         <div class="form-group">
           <label name="specification_description">Specification Description:</label>

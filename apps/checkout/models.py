@@ -1,14 +1,35 @@
 from __future__ import unicode_literals
 from ..login.models import User
 from django.db import models
+import re
 
 class AddressManager(models.Manager):
-    pass
+    def address_validator(self, first_name, last_name, address, city, state, zipcode, country):
+        errors = []
+        if len(first_name) < 2:
+            errors.append("First name must be more than two characters")
+        if len(last_name) < 2:
+            errors.append("Last name must be more than two characters")
+        if len(address) < 8:
+            errors.append("Invalid address")
+        if len(city) < 2 or re.search(r'[0-9]', city):
+            errors.append("Invalid city")
+        if len(state) < 2 or re.search(r'[0-9]', state):
+            errors.append("Invalid State")
+        if len(country) < 2 or re.search(r'[0-9]', country):
+            errors.append("Invalid country")
+        if len(zipcode) < 5 or not re.search(r'^[0-9]+$', zipcode):
+            errors.append("Invalid zipcode")
+        return errors
+
 
 
 class CreditCardManager(models.Manager):
-    def home(self):
-        pass
+    def card_validator(self, full_name, card_number, expiration_date, cvv):
+        if len(full_name) < 5 or re.search(r'[0-9]', full_name):
+            errors.append("Invalid name")
+        
+
 
 class Address(models.Model):
     first_name = models.CharField(max_length=100)
