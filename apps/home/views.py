@@ -11,6 +11,9 @@ def index(request):
     subcategories = Subcategory.objects.all()
     today = datetime.now().date()
     daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
+    if not daily_deal:
+        daily_deal = Product.objects.filter(daily_deal=True).order_by('expire_date')[:1]
+        daily_deal = daily_deal[0]
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
@@ -322,10 +325,12 @@ def update_product(request, id):
             for error in errors:
                 messages.error(request, error)
             return redirect(reverse('home:edit_product', kwargs={'id':id}))
+        expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
         if deal_date:
             deal_date = datetime.strptime(deal_date, "%m/%d/%Y")
-        expire_date = datetime.strptime(expire_date, "%m/%d/%Y")
-        Product.objects.filter(id=id).update(name=name, description=description, subcategory=subcategory, price=price, list_price=list_price, active=active, daily_deal=daily_deal, quantity=quantity, expire_date=expire_date, deal_date=deal_date, primary_image=primary_image)
+            Product.objects.filter(id=id).update(name=name, description=description, subcategory=subcategory, price=price, list_price=list_price, active=active, daily_deal=daily_deal, quantity=quantity, expire_date=expire_date, deal_date=deal_date, primary_image=primary_image)
+        else:
+            Product.objects.filter(id=id).update(name=name, description=description, subcategory=subcategory, price=price, list_price=list_price, active=active, daily_deal=daily_deal, quantity=quantity, expire_date=expire_date, primary_image=primary_image)
         message = "Product Successfully Updated!"
         messages.success(request, message)
         return redirect('home:manage_products')
