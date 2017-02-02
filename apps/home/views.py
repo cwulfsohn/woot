@@ -10,8 +10,9 @@ def index(request):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     today = datetime.now().date()
-    daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
-    if not daily_deal:
+    try:
+        daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
+    except:
         daily_deal = Product.objects.filter(daily_deal=True).order_by('expire_date')[:1]
         daily_deal = daily_deal[0]
     deal_images = Image.objects.filter(product = daily_deal)
