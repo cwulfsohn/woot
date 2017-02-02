@@ -9,19 +9,31 @@
   </head>
   <body>
     <div class="container">
-      <h2>Shopping Cart ({{products|length}} item(s))</h2>
+      <h2>Shopping Cart </h2>
       <div id="products">
         <div class="row">
           <div class="col-sm-6"></div>
-          <p class="col-sm-3">Price</p>
           <p class="col-sm-3">Quantity</p>
+          <p class="col-sm-3">Price</p>
         </div>
-        {% for product in products %}
+        {% for product in cart_products %}
           <div class="row">
-            <p class="col-sm-6">{{product.name}}</p>
-            <p class="col-sm-3">{{product.price}}</p>
+            <div class="col-sm-6">
+              <h3><a href="{% url 'home:show_product' id=product.id %}">{{product.name}}</a></h3>
+              <a href="{% url 'checkout:remove' id=product.id %}">Remove All</a>
+            </div>
+            <h3 class="col-sm-3">{{product.quantity}}</h3>
+            <h3 class="col-sm-3">{{product.price|floatformat:2}}</h3>
           </div>
         {% endfor %}
+        <div class="row">
+          <div class="col-sm-9">
+            <a class="btn btn-success" href="{% url 'checkout:address' %}">Check Out</a>
+          </div>
+          <div class="col-sm-3">
+            <h3>Total: {{total}}</h3>
+          </div>
+        </div>
       </div>
     </div>
   </body>

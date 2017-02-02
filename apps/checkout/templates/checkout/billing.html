@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Billing</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready(function(){
+        $('input[type="radio"]').click(function(){
+          if($(this).attr('id') == "new_address"){
+            $("#new_address_form").show();
+          }
+          else{
+            $("#new_address_form").hide();
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      {% for message in messages %}
+        <p>{{message}}</p>
+      {% endfor %}
+      <h1>Select a payment method</h1>
+      {% if not cards %}
+      <h2>You have no saved payment methods</h2>
+      {% endif %}
+      <form action="{% url 'checkout:select_card' %}" method="post">
+        {% csrf_token %}
+        {% for card in cards %}
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="card_id" value="{{card.id}}"> Card ending in ****{{card.last_four}}
+            </label>
+          </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-success" value="Select">
+      </form>
+      <div>
+        <h2>Add a payment method</h2>
+        <form action="{% url 'checkout:add_card' %}" method="post">
+          {% csrf_token %}
+          <legend>Card</legend>
+          <div class="form-group">
+            <label for="full_name">Full Name on Card</label>
+            <input class="form-control" type="text" name="full_name" required>
+          </div>
+          <div class="form-group">
+            <label for="card_number">Card Number</label>
+            <input class="form-control" type="text" name="card_number" required>
+          </div>
+          <div class="form-group">
+            <label for="expiration_date">Expiration Date (Format: MM/YY)</label>
+            <input class="form-control" type="text" name="expiration_date" required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV</label>
+            <input class="form-control" type="text" name="cvv">
+          </div>
+          <div class="form-check">
+            <legend>Address</legend>
+            <label class="form-check-label">
+              <input class="form-check-input" id="old_address" type="radio" name="billing_address" value="True" checked> Use shipping address
+            </label>
+            <label class="form-check-label">
+              <input class="form-check-input" id="new_address" type="radio" name="billing_address" value="False" > Add new billing address
+            </label>
+          </div>
+          <div id="new_address_form" style="display:none">
+            <div class="form-group">
+              <label for="first_name">First Name</label>
+              <input class="form-control" type="text" name="first_name">
+            </div>
+            <div class="form-group">
+              <label for="last_name">Last Name</label>
+              <input class="form-control" type="text" name="last_name">
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input class="form-control" type="text" name="address">
+            </div>
+            <div class="form-group">
+              <label for="unit">Unit</label>
+              <input class="form-control" type="text" name="unit">
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input class="form-control" type="text" name="city">
+            </div>
+            <div class="form-group">
+              <label for="state">State</label>
+              <input class="form-control" type="text" name="state">
+            </div>
+            <div class="form-group">
+              <label for="zipcode">Zipcode</label>
+              <input class="form-control" type="text" name="zipcode">
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input class="form-control" type="text" name="country">
+            </div>
+          </div>
+          <input type="submit" class="btn btn-success" value="Add Payment">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Review</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  </head>
+  <body>
+    <div class="container">
+    <h1>Review</h1>
+      <div class="row">
+        <h3 class="col-sm-3">Selected Address:</h3>
+        <div class="col-sm-6">
+        {% if address %}
+        <p>{{address.first_name}} {{address.last_name}}</p>
+        <p>{{address.address}}, {{address.unit}}</p>
+        <p>{{address.city}}, {{address.state}} {{address.zip_code}}</p>
+        <p>{{address.country}}</p>
+      </div>
+        {% else %}
+          <h3>No address selected</h3>
+        {% endif %}
+        <h4 class="col-sm-3"><a href="{% url 'checkout:address' %}">Change</a></h4>
+      </div>
+      <div class="row">
+        <h3 class="col-sm-3">Selected Payment:</h3>
+        <h5 class="col-sm-6">
+          {% if card %}
+            Card ending in ****{{card.last_four}}
+          {% else %}
+            No Card Selected
+          {% endif %}
+        </h5>
+        <h4 class="col-sm-3"><a href="{% url 'checkout:billing' %}">Change</a></h4>
+      </div>
+      <div class="row">
+        <h3 class="col-sm-3">Review Cart:</h3>
+        {% for product in cart_products %}
+          <div class="col-sm-9 row">
+            <h4 class="col-sm-4">PictureHERE</h4>
+            <h4 class="col-sm-4">{{product.name}} x {{product.quantity}}</h4>
+            <h4 class="col-sm-4">{{product.price|floatformat:2}}</h4>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="row">
+        <h3 class="col-sm-3">Total</h3>
+        <h3 class="col-sm-3">{{total}}</h3>
+      </div>
+      <button class="btn btn-success" type="button" name="button">Purchase</button>
+    </div>
+  </body>
+</html>
