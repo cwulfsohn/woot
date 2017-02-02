@@ -19,6 +19,8 @@
         {% for product in cart_products %}
           <div class="row">
             <div class="col-sm-6">
+              {% load static %}
+              <img class=" col-sm-6" src="{% static product.primary_image %}" >
               <h3><a href="{% url 'home:show_product' id=product.id %}">{{product.name}}</a></h3>
               <a href="{% url 'checkout:remove' id=product.id %}">Remove All</a>
             </div>
@@ -31,7 +33,7 @@
             <a class="btn btn-success" href="{% url 'checkout:address' %}">Check Out</a>
           </div>
           <div class="col-sm-3">
-            <h3>Total: {{total}}</h3>
+            <h3>Total: {{total|floatformat:2}}</h3>
           </div>
         </div>
       </div>

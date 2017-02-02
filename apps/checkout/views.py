@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from ..home.models import Product, Cart
+from ..home.models import Product, Cart, Purchase
 from ..login.models import User
 from django.db.models import Count
 from django.contrib import messages
@@ -7,16 +7,11 @@ from .models import *
 import bcrypt
 from datetime import datetime
 
-# <QuerySet [{'product__name__count': 2, 'product__name': u'Beneful Original'}, {'product__name__count': 1, 'product__name': u'Nurf Hoop!'}]>
-
-def index(request):
-    if "id" not in request.session:
-        return redirect(reverse('login:index'))
+def get_cart_products(request):
     user = User.objects.get(id=request.session["id"])
     products = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=True).distinct()
     quantities = Cart.objects.filter(user=user).filter(active=True).filter(product__active=True).values('product__name').order_by().annotate(Count('product__name'))
     cart_products = []
-    total = 0
     for product in products:
         cart_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
         for quantity in quantities:
@@ -24,7 +19,19 @@ def index(request):
                 cart_product["quantity"] = quantity["product__name__count"]
         cart_product["price"] = cart_product["quantity"] * product.price
         cart_products.append(cart_product)
+    return cart_products
+
+def get_total(cart_products):
+    total = 0
+    for cart_product in cart_products:
         total += cart_product["price"]
+    return total
+
+def index(request):
+    if "id" not in request.session:
+        return redirect(reverse('login:index'))
+    cart_products = get_cart_products(request)
+    total = get_total(cart_products)
     context = {"cart_products":cart_products, "total":total}
     return render(request, 'checkout/index.html', context)
 
@@ -46,20 +53,8 @@ def remove(request, id):
 def buy(request):
     if "id" not in request.session:
         return redirect(reverse('login:index'))
-    user = User.objects.get(id=request.session["id"])
-    products = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=True).distinct()
-    quantities = Cart.objects.filter(user=user).filter(active=True).filter(product__active=True).values('product__name').order_by().annotate(Count('product__name'))
-    cart_products = []
-    total = 0
-    for product in products:
-        cart_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
-        for quantity in quantities:
-            if quantity["product__name"] == product.name:
-                cart_product["quantity"] = quantity["product__name__count"]
-        cart_product["price"] = cart_product["quantity"] * product.price
-        cart_products.append(cart_product)
-        total += cart_product["price"]
-    print request.session['card_id']
+    cart_products = get_cart_products(request)
+    total = get_total(cart_products)
     try:
         address = Address.objects.get(id=request.session["address_id"])
     except:
@@ -104,6 +99,8 @@ def select_address(request):
             messages.error(request, "You must select an address")
             return redirect(reverse('checkout:address'))
         request.session["address_id"] = request.POST["address_id"]
+        if "card_id" in request.session:
+            return redirect(reverse("checkout:buy"))
     return redirect(reverse('checkout:billing'))
 
 def select_card(request):
@@ -146,3 +143,23 @@ def add_card(request):
             address = Address.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, unit=unit, city=city, state=state, zip_code=zipcode, country=country)
         card = CreditCard.objects.create(last_four=last_four, user=user, address=address, full_name=full_name, card_number=card_number, cvv=cvv, expiration_date=expiration_date)
     return redirect(reverse('checkout:billing'))
+
+def purchase(request):
+    if not request.method == "POST":
+        return redirect(reverse('checkout:buy'))
+    del request.session["address_id"]
+    del request.session["card_id"]
+    cart_products = get_cart_products(request)
+    total = get_total(cart_products)
+    user = User.objects.get(id=request.session["id"])
+    for cart_product in cart_products:
+        product = Product.objects.get(id=cart_product['id'])
+        for quantity in range(cart_product['quantity']):
+            Purchase.objects.create(user=user, product=product)
+            product.quantity = product.quantity - 1
+            product.save()
+        Cart.objects.filter(user=user, product=product).update(active=False)
+    return redirect(reverse('checkout:success'))
+
+def success(request):
+    return render(request, 'checkout/success.html')

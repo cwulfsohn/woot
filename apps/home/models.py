@@ -149,8 +149,8 @@ class Cart(models.Model):
     objects = CartManager()
 
 class Purchase(models.Model):
-    user = models.ManyToManyField(User, related_name="user_purchase")
-    product = models.ManyToManyField(Product, related_name="product_purchase")
+    user = models.ForeignKey(User, related_name="user_purchase")
+    product = models.ForeignKey(Product, related_name="product_purchase")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
