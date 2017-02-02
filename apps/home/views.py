@@ -4,10 +4,13 @@ from .forms import ImageUploadForm
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.db.models import Count
+from django.db.models import Avg
 import json
 
 # Create your views here.
 def index(request):
+    if 'id' not in request.session:
+        request.session.clear()
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     today = datetime.now().date()
@@ -25,6 +28,7 @@ def index(request):
                'deal_image': deal_images,
                'percent_off': percent_off,
                'comments': comments,
+               'today': today,
                }
     return render(request, 'home/index.html', context)
 
@@ -147,12 +151,28 @@ def show_product(request, id):
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
+    features = Feature.objects.filter(product=product)
+    specifications = Specifications.objects.filter(product=product)
+    try:
+        Rating.objects.get(product_id = product.id, user_id = request.session['id'])
+        rated = True
+    except:
+        rated = False
+    try:
+        avg_rating = product.product_rating.aggregate(Avg('rating')).values()[0]
+        avg_rating = round(avg_rating, 1)
+    except:
+        pass
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
                'images': images,
                'comments': comments,
                'percent_off': percent_off,
+               'rated': rated,
+               'avg_rating': avg_rating,
+               'features': features,
+               'specifications': specifications,
                }
     return render(request, 'home/product.html', context)
     # except:
@@ -325,7 +345,14 @@ def manage_products(request):
     if 'admin_level' not in request.session:
         return redirect('home:index')
     all_products = Product.objects.all()
-    context = {'all_products': all_products}
+    description_teasers = {}
+    for product in all_products:
+        if len(product.description) > 50:
+            description_teasers[product.id] = product.description[0:50] + "..."
+        else:
+            description_teasers[product.id] = product.description
+    context = {'all_products': all_products,
+               'description_teasers': description_teasers}
     return render(request, 'home/product_dashboard.html', context)
 
 def edit_product(request, id):

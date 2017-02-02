@@ -83,52 +83,101 @@
       </div>
     </nav><!-- End NAVBAR -->
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
-    <div class="container">
+    <div class="container" class="col-xs-12">
       <div id="product_area">
-        <div id="deal-buy" class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-          <p>&nbsp;</p>
-          <h3 class="name-font">{{ product.name }}</h3>
-          <p class="name-font h2">${{ product.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
-          <form class="/add_to_cart" action="{% url 'checkout:add_cart' id=product.id %}" method="post">
-            {% csrf_token %}
-            <label for="quantity">Quantity:</label>
-            <select class="" name="quantity">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select><span>Limit 3 per customer </span>
-            <p>Shipping: <strong>Standard</strong></p>
-            <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
-          </form>
-          <hr>
-          <h5>Rate This Product</h5>
-          <form action="{% url 'home:rating' id=product.id %}" method="post">
-            {% csrf_token %}
-            <select name="rating">
-              <option value=5>5</option>
-              <option value=4>4</option>
-              <option value=3>3</option>
-              <option value=2>2</option>
-              <option value=1>1</option>
-            </select>
-            <input type="submit" value="Rate!">
-          </form>
-          <hr>
-          <h4>Discuss This Deal</h4>
-          {% for comment in comments %}
-          <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
-          {% endfor %}
-          {% if not comments %}
-          <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
-          {% endif %}
-          <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
-          <hr>
-          <h5>Description:</h5>
-          <p>{{ product.description }}</p>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 product_image">
-          {% load static %}
-          <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
+        <div id="deal-buy" class="col-xs-12">
+          <h3 class="name-font col-xs-12 col-md-4 row">{{ product.name }}</h3>
+          <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 pull-right product_image img-responsive">
+            {% load static %}
+            <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
+          </div>
+          <div class="col-xs-12 col-md-4 row">
+            <p class="name-font h2">${{ product.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
+            <form class="/add_to_cart" action="{% url 'checkout:add_cart' id=product.id %}" method="post">
+              {% csrf_token %}
+              <label for="quantity">Quantity:</label>
+              <select class="" name="quantity">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select><span>Limit 3 per customer </span>
+              <p>Shipping: <strong>Standard</strong></p>
+              <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
+            </form>
+            <hr>
+            {% if not rated %}
+            <h5>Rate This Product</h5>
+            <form action="{% url 'home:rating' id=product.id %}" method="post">
+              {% csrf_token %}
+              <select name="rating">
+                <option value=5>5</option>
+                <option value=4>4</option>
+                <option value=3>3</option>
+                <option value=2>2</option>
+                <option value=1>1</option>
+              </select> Stars
+              <input type="submit" value="Rate!">
+            </form>
+            {% endif %}
+            {% if avg_rating %}
+            <h5>Average Rating: {{avg_rating}} Stars</h5>
+            {% else %}
+            <h6>This product has not yet been rated. Be the first!</h6>
+            {% endif %}
+            <hr>
+            <h4>Discuss This Deal</h4>
+            {% for comment in comments %}
+            <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
+            {% endfor %}
+            {% if not comments %}
+            <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
+            {% endif %}
+            <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
+            <hr>
+            <h5>Description:</h5>
+            <p>{{ product.description }}</p>
+          </div>
+
+          <div role="tabpanel" class="col-md-8 col-xs-12 pull-right" id="feats_specs">
+            <div>&nbsp;</div>
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#features" class = "active pull-left" aria-controls="features" role="tab" data-toggle="tab">Features</a>
+              </li>
+              <li role="presentation">
+                <a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Specifications</a>
+              </li>
+              <li role="presentation">
+                <a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Stats</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="features">
+                {% if features %}
+                  {% for feature in features %}
+                  <p><strong>{{ feature.header }}</strong>: {{feature.feature}}</p>
+                  {% endfor %}
+                {% endif %}
+                {% if not features %}
+                <p>No specified features</p>
+                {% endif %}
+              </div>
+              <div role="tabpanel" class="tab-pane" id="specifications">
+                {% if specifications %}
+                  {% for spec in specifications %}
+                <p><strong>{{spec.spec_category.category}}</strong>: {{spec.value}}</p>
+                  {% endfor %}
+                {% endif %}
+                {% if not specifications %}
+                <p>No specified specifications</p>
+                {% endif %}
+              </div>
+              <div role="tabpanel" class="tab-pane" id="statistics">
+                Stats go here!
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div> <!-- /container -->
