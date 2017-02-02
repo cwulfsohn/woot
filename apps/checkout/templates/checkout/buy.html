@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Review</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Review</h1>
+      <div class="row">
+        <h3 class="col-sm-3">Selected Address:</h3>
+        <div class="col-sm-6">
+        {% if address %}
+          <p>{{address.first_name}} {{address.last_name}}</p>
+          <p>{{address.address}}, {{address.unit}}</p>
+          <p>{{address.city}}, {{address.state}} {{address.zip_code}}</p>
+          <p>{{address.country}}</p>
+        {% else %}
+          <h3>No address selected</h3>
+        {% endif %}
+        </div>
+        <div class="col-sm-3">
+          <h4><a href="{% url 'checkout:address' %}">Change</a></h4>
+        </div>
+      </div>
+      <div class="row">
+        <h3 class="col-sm-3">Selected Payment:</h3>
+        {% if card %}
+          <h5 class="col-sm-6">
+            Card ending in ****{{card.last_four}}
+          </h5>
+        {% else %}
+            <h3 class="col-sm-6">No card selected</h3>
+        {% endif %}
+        <h4 class="col-sm-3"><a href="{% url 'checkout:billing' %}">Change</a></h4>
+      </div>
+      <h3 >Review Cart:</h3>
+        {% for product in cart_products %}
+        <div class="row">
+          <div class="col-sm-3">
+          </div>
+            {% load static %}
+            <div class="col-sm-3"><img class="col-sm-12" src="{% static product.primary_image %}"></div>
+            <div class="col-sm-3"><h4>{{product.name}} x {{product.quantity}}</h4></div>
+            <div class="col-sm-3"><h4>{{product.price|floatformat:2}}</h4></div>
+          </div>
+        {% endfor %}
+      <div class="row">
+        <h3 class="col-sm-3">Total</h3>
+        <h3 class="col-sm-3">{{total|floatformat:2}}</h3>
+      </div>
+      {% if address and card %}
+        <form action="{% url 'checkout:purchase' %}" method="post">
+          {% csrf_token %}
+          <input class="btn btn-success" type="submit" value="Purchase">
+        </form>
+      {% else %}
+        <p class="btn btn-danger">Must select card and address before checkout</p>
+      {% endif %}
+    </div>
+  </body>
+</html>

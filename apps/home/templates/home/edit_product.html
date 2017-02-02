@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $( function() {
+        $( ".datepicker" ).datepicker({
+          changeMonth: true,
+          changeYear: true,
+          minDate: 0
+        });
+      } );
+      $(document).ready(function(){
+        $("#category").change( function () {
+          var targID  = $(this).val ();
+          $("div.toggle-select").hide ();
+          $('#' + targID).show ();
+        } )
+      })
+  </script>
+  </head>
+  <body>
+    <div class="container">
+      {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+          <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      <h1>Edit Product Details   <a class="btn btn-success pull-right" href="{% url 'home:manage_products' %}">Back to Manage Products</a></h1>
+      <form action="{% url 'home:update_product' id=product.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input class="form-control" placeholder="Name" type="text" name="name" required value="{{product.name}}">
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" name="description" rows="8" cols="80" required >{{product.description}}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select class="form-control" name="category" id="category">
+            {% for category in categories %}
+              <option value="{{category.id}}" {% if current_category.id == category.id %} selected {% endif %}>{{category.category}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% for category in categories %}
+          <div id="{{category.id}}" style="display:none" class="form-group toggle-select" onchange="ChangeDropdowns(this.value)">
+            <label for="Subcategory">Subcategory</label>
+            <select class="form-control" name="{{category.id}}_subcategory">
+              {% for subcategory in category.subcategories.all %}
+              <option value="{{subcategory.id}}"{% if current_subcategory.id == subcategory.id %} selected {% endif %}>{{subcategory.subcategory}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endfor %}
+        <div class="form-group">
+          <label for="price">Price</label>
+          <input type="text" class="form-control" name="price" required value="{{product.price|floatformat:2}}">
+        </div>
+        <div class="form-group">
+          <label for="list_price">List Price</label>
+          <input type="text" class="form-control" name="list_price" required value="{{product.list_price|floatformat:2}}">
+        </div>
+        <fieldset class="form-group">
+          <legend>Active?</legend>
+          <div class="form-check">
+            <label class="form-check-label">
+              True <input type="radio" class="form-check-input" value="True" name="active" {% if product.active == True %} checked {% endif %}>
+            </label>
+            <label class="form-check-label">
+              False <input type="radio" class="form-check-input" value="False" name="active" {% if product.active == False %} checked {% endif %}>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset class="form-group">
+          <legend>Daily Deal?</legend>
+          <div class="form-check">
+            <label class="form-check-label">
+              True <input type="radio" value="True" name="daily_deal" {% if product.daily_deal == True %} checked {% endif %}>
+            </label>
+            <label class="form-check-label">
+              False <input type="radio" value="False" name="daily_deal" {% if product.daily_deal == False %} checked {% endif %}>
+            </label>
+          </div>
+        </fieldset>
+        <div id="True">
+          <label for="deal_date">Deal Date</label>
+          <input type="text" class="form-control datepicker" name="deal_date" {% if daily_deal %} value="{{product.deal_date}}" {% endif %}>
+        </div>
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input type="text" class="form-control" name="quantity" required value="{{product.quantity}}">
+        </div>
+        <div class="form-group">
+          <label for="expire_date">Expire Date</label>
+          <input type="text" class="form-control datepicker" name="expire_date" required value="{{product.expire_date}}">
+        </div>
+        <div class="form-group">
+          <label for="primary_image">Primary Image Location</label>
+          <input type="text" class="form-control" name="primary_image" required value="{{product.primary_image}}">
+        </div>
+        <input type="submit" name="Submit" class="btn btn-success">
+      </form>
+    </div>
+  </body>
+</html>
