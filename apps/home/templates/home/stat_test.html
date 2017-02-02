@@ -14,7 +14,7 @@
     <div id="chart_container" style="width:100%; height:400px;"></div>
     <div id="container" style="width:100%; height:400px;"></div>
     <script>
-    var product = {{daily_deal| safe}}
+    var daily_product = {{daily_deal| safe}}
       $(function () {
         Highcharts.chart('chart_container', {
        chart: {
@@ -47,7 +47,7 @@
        },
        series: [{
            name: 'Population',
-           data: product,
+           data: daily_product,
            dataLabels: {
                enabled: true,
                rotation: -90,
@@ -65,7 +65,7 @@
 });
     </script>
     <script type="text/javascript">
-
+    var product = {{product_percent| safe}}
     $(function () {
         $('#container').highcharts({
             chart: {
@@ -97,19 +97,7 @@
             series: [{
                 type: 'pie',
                 name: 'Browser share',
-                data: [
-                    ['Firefox',   45.0],
-                    ['IE',       26.8],
-                    {
-                        name: 'Chrome',
-                        y: 12.8,
-                        sliced: true,
-                        selected: true
-                    },
-                    ['Safari',    8.5],
-                    ['Opera',     6.2],
-                    ['Others',   0.7]
-                ]
+                data: product
             }]
         });
     });

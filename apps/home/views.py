@@ -278,24 +278,47 @@ def rating(request, id):
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
-def stat(request):
-    today = datetime.date.today()
-    first_day = datetime.date.today()-timedelta(days=6)
+def stat(request, id):
+    today = datetime.now().date()
+    first_day = datetime.now().date()-timedelta(days=6)
     daily_deal = []
-    product_id = Product.objects.get(id = 5)
+    product_id = Product.objects.get(id = id)
     category_id = Category.objects.get(subcategories__products__id = product_id.id)
     product_list = Product.objects.filter(subcategory__category__category = category_id.category)
+    category_count = 0
+    product_percent = []
     for category_products in product_list:
-        print category_products.name
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            category_count += 1
+    for category_products in product_list:
+        count = 0
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            count += 1
+        holder = []
+        holder.append(category_products.name)
+        holder.append(float(float(count)/float(category_count)))
+        product_percent.append(holder)
+        print product_percent
+    show_item = 0
+    for purchases in Purchase.objects.filter(product_id = product_id.id):
+        show_item += 1
+    purchase_deal  = []
+    purchase_deal.append(product_id.name)
+    purchase_deal.append(show_item)
+    daily_deal.append(purchase_deal)
     product = Product.objects.filter(daily_deal = 1)
     for products in product:
         deal = []
+        purchase_count = 0
         if str(products.deal_date) <= str(today) and str(products.deal_date) > str(first_day):
+            for purchases in Purchase.objects.filter(product_id = products.id):
+                purchase_count += 1
             deal.append(products.name)
-            deal.append(5)
+            deal.append(purchase_count)
             daily_deal.append(deal)
     context = {
         'daily_deal':json.dumps(daily_deal),
+        'product_percent':json.dumps(product_percent)
     }
     return render(request, 'home/stat_test.html', context)
 

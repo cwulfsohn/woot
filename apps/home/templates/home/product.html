@@ -35,7 +35,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="#">Your Account</a></li>
+                <li><a href="{% url 'login:edit' %}">Your Account</a></li>
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
@@ -101,6 +101,19 @@
             <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
           </form>
           <hr>
+          <h5>Rate This Product</h5>
+          <form action="{% url 'home:rating' id=product.id %}" method="post">
+            {% csrf_token %}
+            <select name="rating">
+              <option value=5>5</option>
+              <option value=4>4</option>
+              <option value=3>3</option>
+              <option value=2>2</option>
+              <option value=1>1</option>
+            </select>
+            <input type="submit" value="Rate!">
+          </form>
+          <hr>
           <h4>Discuss This Deal</h4>
           {% for comment in comments %}
           <p><strong>{{ comment.author.username}}</strong> says: {{ comment.content }}</p>
@@ -113,22 +126,9 @@
           <h5>Description:</h5>
           <p>{{ product.description }}</p>
         </div>
-        <div id="deal-info" class="col-lg-8 col-md-8 col-sm-12 col-xs-12 product_image">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 product_image">
           {% load static %}
-
           <img class="img-responsive" src="{% static product.primary_image.name %}" alt="">
-          <p>Rate the product</p>
-          <form action="{% url 'home:rating' id=product.id %}" method="post">
-            {% csrf_token %}
-            <select name="rating">
-              <option value=1>1</option>
-              <option value=2>2</option>
-              <option value=3>3</option>
-              <option value=4>4</option>
-              <option value=5>5</option>
-            </select>
-            <input type="submit" value="Rate!">
-          </form>
         </div>
       </div>
     </div> <!-- /container -->
