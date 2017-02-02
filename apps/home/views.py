@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
-from datetime import datetime
+from datetime import datetime, timedelta
+import datetime
 from django.contrib import messages
 from django.db.models import Count
+import json
 
 # Create your views here.
 def index(request):
@@ -225,6 +227,9 @@ def comment(request):
     if request.method == 'POST':
         comment = request.POST['comment']
         product_id = request.POST['product_id']
+        if len(comment) < 2:
+            messages.error(request, "Description does not meet length criteria")
+            return redirect(reverse('home:discussion', kwargs={'id':product_id}))
         user_id = request.session['id']
         Comment.objects.AddComment(comment, product_id, user_id)
     return redirect(reverse('home:discussion', kwargs={'id':product_id}))
@@ -249,3 +254,24 @@ def rating(request, id):
         product_rating = round(float(avg_rate)/float(count),2)
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
+
+def stat(request):
+    today = datetime.date.today()
+    first_day = datetime.date.today()-timedelta(days=6)
+    daily_deal = []
+    product_id = Product.objects.get(id = 5)
+    category_id = Category.objects.get(subcategories__products__id = product_id.id)
+    product_list = Product.objects.filter(subcategory__category__category = category_id.category)
+    for category_products in product_list:
+        print category_products.name
+    product = Product.objects.filter(daily_deal = 1)
+    for products in product:
+        deal = []
+        if str(products.deal_date) <= str(today) and str(products.deal_date) > str(first_day):
+            deal.append(products.name)
+            deal.append(5)
+            daily_deal.append(deal)
+    context = {
+        'daily_deal':json.dumps(daily_deal),
+    }
+    return render(request, 'home/stat_test.html', context)

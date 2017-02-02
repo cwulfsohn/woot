@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^discussion/delete/(?P<id>\d+)/(?P<product_id>\d+)$', views.delete_comment, name="delete_comment"),
     url(r'^comment$', views.comment, name="comment"),
     url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
+    url(r'^stat$', views.stat, name='stat'),
 ]
