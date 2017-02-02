@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Select Address</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'checkout/css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>'
+  </head>
+  <body>
+    <div class="container">
+      {% for message in messages %}
+        <p>{{message}}</p>
+      {% endfor %}
+      <h1 id="red">Select an address</h1>
+      {% if not addresses %}
+      <h2>You have no saved addresses</h2>
+      {% endif %}
+      {% if addresses %}
+      <form action="{% url 'checkout:select_address' %}" method="post">
+        {% csrf_token %}
+        {% for address in addresses %}
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="address_id" value="{{address.id}}">
+            <div class="line">
+              {{address.first_name}} {{address.last_name}}
+            </div>
+            <div class="line">
+              {{address.address}}, {{address.unit}}
+            </div>
+            <div class="line">
+            {{address.city}}, {{address.state}} {{address.zip_code}}
+            </div>
+            <div class="line">
+            {{address.country}}
+            </div>
+          </label>
+        </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-success" value="Select">
+      </form>
+    {% endif %}
+      <div>
+        <h2>Add an address</h2>
+        <form action="{% url 'checkout:add_address' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input class="form-control" type="text" name="first_name" required>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input class="form-control" type="text" name="last_name" required>
+          </div>
+          <div class="form-group">
+            <label for="address">Address</label>
+            <input class="form-control" type="text" name="address" required>
+          </div>
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <input class="form-control" type="text" name="unit">
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input class="form-control" type="text" name="city" required>
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <input class="form-control" type="text" name="state" required>
+          </div>
+          <div class="form-group">
+            <label for="zipcode">Zipcode</label>
+            <input class="form-control" type="text" name="zipcode" required>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input class="form-control" type="text" name="country" required>
+          </div>
+          <input type="submit" class="btn btn-success" value="Add">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
