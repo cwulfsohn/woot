@@ -298,6 +298,13 @@ def stat(request, id):
         holder.append(category_products.name)
         holder.append(float(count/category_count))
         product_percent.append(holder)
+    show_item = 0
+    for purchases in Purchase.objects.filter(product_id = product_id.id):
+        show_item += 1
+    purchase_deal  = []
+    purchase_deal.append(product_id.name)
+    purchase_deal.append(show_item)
+    daily_deal.append(purchase_deal)
     product = Product.objects.filter(daily_deal = 1)
     for products in product:
         deal = []
