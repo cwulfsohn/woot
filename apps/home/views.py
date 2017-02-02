@@ -279,7 +279,6 @@ def rating(request, id):
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
-<<<<<<< HEAD
 def stat(request):
     today = datetime.date.today()
     first_day = datetime.date.today()-timedelta(days=6)
@@ -300,7 +299,7 @@ def stat(request):
         'daily_deal':json.dumps(daily_deal),
     }
     return render(request, 'home/stat_test.html', context)
-=======
+
 def manage_products(request):
     if 'admin_level' not in request.session:
         return redirect('home:index')
@@ -368,4 +367,3 @@ def delete_product(request, id):
     message = "Product Successfully Deleted!"
     messages.success(request, message)
     return redirect('home:manage_products')
->>>>>>> 798e2bb226fb6d13d16ec9e0fea08f99277bc87b
