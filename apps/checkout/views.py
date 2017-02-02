@@ -12,11 +12,15 @@ def get_cart_products(request):
     products = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=True).distinct()
     quantities = Cart.objects.filter(user=user).filter(active=True).filter(product__active=True).values('product__name').order_by().annotate(Count('product__name'))
     cart_products = []
+    request.session["cart"] = 0
     for product in products:
         cart_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
         for quantity in quantities:
             if quantity["product__name"] == product.name:
                 cart_product["quantity"] = quantity["product__name__count"]
+        if product.quantity < cart_product["quantity"]:
+            cart_product["quantity"] = product.quantity
+        request.session["cart"] += cart_product["quantity"]
         cart_product["price"] = cart_product["quantity"] * product.price
         cart_products.append(cart_product)
     return cart_products
@@ -38,17 +42,22 @@ def index(request):
     return render(request, 'checkout/index.html', context)
 
 def add_cart(request, id):
-    pass
     if request.method == "POST":
         quantity = int(request.POST["quantity"])
         user = User.objects.get(id=request.session["id"])
         product = Product.objects.get(id=id)
+        if not "cart" in request.session:
+            request.session["cart"] = 0
         for i in range(quantity):
+            request.session["cart"] += 1
             Cart.objects.create(product=product, user=user)
+        get_cart_products(request)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
 def remove(request, id):
     user = User.objects.get(id=request.session["id"])
+    count = Cart.objects.filter(user=user).filter(product__id=id).count()
+    request.session["cart"] -= count
     Cart.objects.filter(user=user).filter(product__id=id).delete()
     return redirect(reverse('checkout:index'))
 
@@ -178,6 +187,7 @@ def purchase(request):
     messages.add_message(request, messages.INFO, card_message)
     del request.session["address_id"]
     del request.session["card_id"]
+    del request.session["cart"]
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
     user = User.objects.get(id=request.session["id"])

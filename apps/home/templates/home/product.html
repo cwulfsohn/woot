@@ -72,11 +72,11 @@
             </li>
             {% endfor %}
             <li class="dropdown">
-              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="#">{{ request.session.cart|length }}</a></li>
-                <li><a href="{% url 'checkout:index' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="#">View your cart</a></li>
+                <li><a href="#">{{ request.session.cart }}</a></li>
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>
@@ -95,12 +95,20 @@
             <p class="name-font h2">${{ product.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
             <form class="/add_to_cart" action="{% url 'checkout:add_cart' id=product.id %}" method="post">
               {% csrf_token %}
+              {% if not over %}
               <label for="quantity">Quantity:</label>
               <select class="" name="quantity">
+                {% if product.quantity > 0 %}
                 <option value="1">1</option>
+                {% endif %}
+                {% if product.quantity > 1 %}
                 <option value="2">2</option>
+                {% endif %}
+                {% if product.quantity > 2 %}
                 <option value="3">3</option>
-              </select><span>Limit 3 per customer </span>
+                {% endif %}
+              </select>
+              {% endif %}
               <p>Shipping: <strong>Standard</strong></p>
               <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
             </form>

@@ -7,6 +7,22 @@ from django.db.models import Count
 from django.db.models import Avg
 import json
 
+def get_cart_products(request):
+    user = User.objects.get(id=request.session["id"])
+    products = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=True).distinct()
+    quantities = Cart.objects.filter(user=user).filter(active=True).filter(product__active=True).values('product__name').order_by().annotate(Count('product__name'))
+    cart_products = []
+    for product in products:
+        cart_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
+        for quantity in quantities:
+            if quantity["product__name"] == product.name:
+                cart_product["quantity"] = quantity["product__name__count"]
+        if product.quantity < cart_product["quantity"]:
+            cart_product["quantity"] = product.quantity
+        cart_product["price"] = cart_product["quantity"] * product.price
+        cart_products.append(cart_product)
+    return cart_products
+
 # Create your views here.
 def index(request):
     if 'id' not in request.session:
@@ -100,15 +116,15 @@ def category(request, id):
     subcategories = Subcategory.objects.all()
     category = Category.objects.get(id = id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
-    ending_soon = Product.objects.filter(subcategory__category=category).order_by('expire_date')[:4]
+    ending_soon = Product.objects.filter(subcategory__category=category).filter(active=True).order_by('expire_date')[:4]
     if ending_soon:
         main_product = ending_soon[0]
         images = Image.objects.filter(product=main_product)
         comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
         percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
-        all_products = Product.objects.filter(subcategory__category=category).exclude(id = main_product.id).order_by('expire_date')
+        all_products = Product.objects.filter(subcategory__category=category).filter(active=True).exclude(id = main_product.id).order_by('expire_date')
     else:
-        all_products = Product.objects.filter(subcategory__category=category).order_by('expire_date')
+        all_products = Product.objects.filter(subcategory__category=category).filter(active=True).order_by('expire_date')
         main_product = False
         images = False
         comments = False
@@ -133,7 +149,7 @@ def subcategory(request, id):
     subcategory = Subcategory.objects.get(id = id)
     category = Category.objects.get(id = subcategory.category_id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
-    all_products = Product.objects.filter(subcategory = subcategory).order_by('expire_date')
+    all_products = Product.objects.filter(subcategory = subcategory).filter(active=True).order_by('expire_date')
     context = {'categories': categories,
                'subcategories': subcategories,
                'category': category,
@@ -145,9 +161,17 @@ def subcategory(request, id):
 
 def show_product(request, id):
     # try:
+    cart_products = get_cart_products(request)
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
+    if product.active == False:
+        return redirect(reverse('home:index'))
+    over = False
+    for cart_product in cart_products:
+        if cart_product["id"] == int(id):
+            if cart_product["quantity"] >= product.quantity:
+                over = True
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
@@ -173,6 +197,7 @@ def show_product(request, id):
                'avg_rating': avg_rating,
                'features': features,
                'specifications': specifications,
+               "over":over
                }
     return render(request, 'home/product.html', context)
     # except:
