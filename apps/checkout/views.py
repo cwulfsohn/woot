@@ -76,6 +76,7 @@ def address(request):
     context = {"addresses":addresses}
     return render(request, 'checkout/address.html', context)
 
+
 def add_address(request):
     if request.method == "POST":
         user = User.objects.get(id=request.session["id"])
@@ -88,9 +89,14 @@ def add_address(request):
             unit=None
         city = request.POST['city']
         state = request.POST['state']
-        zipcode = request.POST['zipcode']
+        zip_code = request.POST['zipcode']
         country = request.POST['country']
-        Address.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, unit=unit, city=city, state=state, zip_code=zipcode, country=country)
+        errors = Address.objects.address_validator(first_name, last_name, address, city, state, zip_code, country)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            Address.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, unit=unit, city=city, state=state, zip_code=zip_code, country=country)
     return redirect(reverse('checkout:address'))
 
 def select_address(request):
@@ -122,10 +128,17 @@ def add_card(request):
         user = User.objects.get(id=request.session["id"])
         full_name = request.POST["full_name"]
         last_four = request.POST["card_number"][-4:]
-        card_number = bcrypt.hashpw(request.POST["card_number"].encode(), bcrypt.gensalt())
-        request.POST["card_number"]
-        expiration_date = datetime.strptime(request.POST["expiration_date"], "%m/%y").date()
-        cvv = bcrypt.hashpw(request.POST["cvv"].encode(), bcrypt.gensalt())
+        card_number = request.POST["card_number"]
+        expiration_date = request.POST["expiration_date"]
+        cvv = request.POST["cvv"]
+        errors = CreditCard.objects.card_validator(full_name, card_number, expiration_date, cvv)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+                return redirect(reverse('checkout:billing'))
+        card_number = bcrypt.hashpw(card_number.encode(), bcrypt.gensalt())
+        cvv = bcrypt.hashpw(cvv.encode(), bcrypt.gensalt())
+        expiration_date = datetime.strptime(expiration_date, "%m/%y").date()
         if request.POST["billing_address"] == "True" and "address_id" in request.session:
             address = Address.objects.get(id=request.session["address_id"])
         else:
@@ -140,7 +153,13 @@ def add_card(request):
             state = request.POST['state']
             zipcode = request.POST['zipcode']
             country = request.POST['country']
-            address = Address.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, unit=unit, city=city, state=state, zip_code=zipcode, country=country)
+            errors = Address.objects.address_validator(first_name, last_name, address, city, state, zipcode, country)
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                    return redirect(reverse('checkout:billing'))
+            else:
+                address = Address.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, unit=unit, city=city, state=state, zip_code=zipcode, country=country)
         card = CreditCard.objects.create(last_four=last_four, user=user, address=address, full_name=full_name, card_number=card_number, cvv=cvv, expiration_date=expiration_date)
     return redirect(reverse('checkout:billing'))
 

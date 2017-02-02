@@ -29,9 +29,11 @@
           </div>
         {% endfor %}
         <div class="row">
+          {% if cart_products %}
           <div class="col-sm-9">
             <a class="btn btn-success" href="{% url 'checkout:address' %}">Check Out</a>
           </div>
+          {% endif %}
           <div class="col-sm-3">
             <h3>Total: {{total|floatformat:2}}</h3>
           </div>
