@@ -278,7 +278,6 @@ def rating(request, id):
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
-
 def stat(request, id):
     today = datetime.now().date()
     first_day = datetime.now().date()-timedelta(days=6)
