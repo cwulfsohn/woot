@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from ..login.models import User
 from django.db import models
+from datetime import datetime
 import re
 
 class AddressManager(models.Manager):
@@ -26,9 +27,21 @@ class AddressManager(models.Manager):
 
 class CreditCardManager(models.Manager):
     def card_validator(self, full_name, card_number, expiration_date, cvv):
+        errors = []
         if len(full_name) < 5 or re.search(r'[0-9]', full_name):
             errors.append("Invalid name")
-        
+        if not len(card_number) == 16 or not card_number.isdigit():
+            errors.append("Invalid card number")
+        if not len(cvv) == 3 or not cvv.isdigit():
+            errors.append("Invalid cvv")
+        try:
+            date = datetime.strptime(expiration_date, "%m/%y").date()
+        except:
+            errors.append("Invalid expiration date")
+        return errors
+
+
+
 
 
 class Address(models.Model):

@@ -51,7 +51,11 @@
           <tr>
             <td>{{product.id}}</td>
             <td class='col-xs-1'>{{product.name}}</td>
-            <td class='col-xs-2'>{{product.description}}</td>
+            {% for key, value in description_teasers.items %}
+              {% if key == product.id %}
+              <td>{{value}}</td>
+              {% endif %}
+            {% endfor %}
             <td>{{product.price}}</td>
             <td>{{product.list_price}}</td>
             <td>{{product.active}}</td>
@@ -61,8 +65,12 @@
             <td>{{product.quantity}}</td>
             <td>{{product.subcategory.subcategory}}</td>
             <td>{{product.primary_image}}</td>
-            <td><a href="{% url 'home:edit_product' id=product.id %}">Edit</a> |
-              <a href="{% url 'home:delete_product' id=product.id %}">Delete</a> | <a href="{% url 'home:features' id=product.id %}">Edit Features</a> | <a href="{% url 'home:specifications' id=product.id %}">Edit Specs</a></td>
+            <td class='col-xs-2'><a class="btn btn-xs btn-primary" href="{% url 'home:edit_product' id=product.id %}">Edit Product Info</a>
+              <a class="btn btn-xs btn-info" href="{% url 'home:features' id=product.id %}">Edit Features</a>
+              <a class="btn btn-xs btn-warning" href="{% url 'home:specifications' id=product.id %}">Edit Specs</a>
+              <a class="btn btn-xs btn-success" href="{% url 'home:new_image' id=product.id %}">Upload New Main Image</a>
+              <a class="btn btn-xs btn-danger" href="{% url 'home:delete_product' id=product.id %}">Delete</a>
+              <a class="btn btn-xs btn-default" href="{% url 'home:show_product' id=product.id %}">View Product Page</a></td>
           </tr>
         {% endfor %}
       </tbody>

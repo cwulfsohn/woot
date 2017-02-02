@@ -4,3 +4,28 @@
 #id {
   color: red
 }
+#processed h1,h3,h2 {
+  text-align: center;
+}
+
+#processed .small_images {
+  height: 200px;
+  margin: auto;
+}
+#products .small_images {
+  height: 100px;
+}
+
+#processed .no-padding {
+  padding: 0px;
+}
+
+#products .big {
+  font-weight: bold;
+  font-size: 1.5em;
+  vertical-align: center
+}
+
+.centered {
+  text-align: center;
+}

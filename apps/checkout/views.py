@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from ..home.models import Product, Cart, Purchase
+from ..home.models import Product, Cart, Purchase, Order, Subcategory
 from ..login.models import User
 from django.db.models import Count
 from django.contrib import messages
@@ -12,11 +12,15 @@ def get_cart_products(request):
     products = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=True).distinct()
     quantities = Cart.objects.filter(user=user).filter(active=True).filter(product__active=True).values('product__name').order_by().annotate(Count('product__name'))
     cart_products = []
+    request.session["cart"] = 0
     for product in products:
         cart_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
         for quantity in quantities:
             if quantity["product__name"] == product.name:
                 cart_product["quantity"] = quantity["product__name__count"]
+        if product.quantity < cart_product["quantity"]:
+            cart_product["quantity"] = product.quantity
+        request.session["cart"] += cart_product["quantity"]
         cart_product["price"] = cart_product["quantity"] * product.price
         cart_products.append(cart_product)
     return cart_products
@@ -32,21 +36,28 @@ def index(request):
         return redirect(reverse('login:index'))
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
-    context = {"cart_products":cart_products, "total":total}
+    user = User.objects.get(id=request.session["id"])
+    expireds = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=False).distinct()
+    context = {"cart_products":cart_products, "total":total, "expireds":expireds}
     return render(request, 'checkout/index.html', context)
 
 def add_cart(request, id):
-    pass
     if request.method == "POST":
         quantity = int(request.POST["quantity"])
         user = User.objects.get(id=request.session["id"])
         product = Product.objects.get(id=id)
+        if not "cart" in request.session:
+            request.session["cart"] = 0
         for i in range(quantity):
+            request.session["cart"] += 1
             Cart.objects.create(product=product, user=user)
+        get_cart_products(request)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
 def remove(request, id):
     user = User.objects.get(id=request.session["id"])
+    count = Cart.objects.filter(user=user).filter(product__id=id).count()
+    request.session["cart"] -= count
     Cart.objects.filter(user=user).filter(product__id=id).delete()
     return redirect(reverse('checkout:index'))
 
@@ -131,11 +142,12 @@ def add_card(request):
         card_number = request.POST["card_number"]
         expiration_date = request.POST["expiration_date"]
         cvv = request.POST["cvv"]
+        errors = []
         errors = CreditCard.objects.card_validator(full_name, card_number, expiration_date, cvv)
         if errors:
             for error in errors:
                 messages.error(request, error)
-                return redirect(reverse('checkout:billing'))
+            return redirect(reverse('checkout:billing'))
         card_number = bcrypt.hashpw(card_number.encode(), bcrypt.gensalt())
         cvv = bcrypt.hashpw(cvv.encode(), bcrypt.gensalt())
         expiration_date = datetime.strptime(expiration_date, "%m/%y").date()
@@ -166,19 +178,40 @@ def add_card(request):
 def purchase(request):
     if not request.method == "POST":
         return redirect(reverse('checkout:buy'))
+    user = User.objects.get(id=request.session["id"])
+    address = Address.objects.get(id=request.session["address_id"])
+    address_message = "Shipped to: " + address.address
+    card = CreditCard.objects.get(id=request.session["card_id"])
+    card_message = "Payment: card ending in ***" + card.last_four
+    messages.add_message(request, messages.INFO, address_message)
+    messages.add_message(request, messages.INFO, card_message)
     del request.session["address_id"]
     del request.session["card_id"]
+    del request.session["cart"]
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
     user = User.objects.get(id=request.session["id"])
+    order = Order.objects.create(user=user)
     for cart_product in cart_products:
         product = Product.objects.get(id=cart_product['id'])
         for quantity in range(cart_product['quantity']):
-            Purchase.objects.create(user=user, product=product)
+            Purchase.objects.create(user=user, product=product, order=order)
             product.quantity = product.quantity - 1
+            if product.quantity <= 0:
+                product.active = False
             product.save()
         Cart.objects.filter(user=user, product=product).update(active=False)
     return redirect(reverse('checkout:success'))
 
 def success(request):
-    return render(request, 'checkout/success.html')
+    user = User.objects.get(id=request.session["id"])
+    order = Order.objects.filter(user=user).order_by('-id')[0]
+    products = Product.objects.filter(product_purchase__order=order)
+    saved = 0
+    total = 0
+    other_products = Product.objects.filter(subcategory=products[0].subcategory).exclude(id=products[0].id)[:6]
+    for product in products:
+        saved += product.list_price - product.price
+        total += product.price
+    context = {"order":order, "products":products, "saved":saved, "other_products":other_products, "total":total}
+    return render(request, 'checkout/success.html', context)
