@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Success</title>
+    {% load staticfiles  %}
+    <link rel="stylesheet" type="text/css "href="{% static 'checkout/css/styles.css' %}">
+    <link rel="stylesheet" type="text/css "href="{% static 'home/css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  </head>
+  <body>
+    <div class="container" id="processed">
+      <h1>Your order (#{{order.id}}) has been processed!</h1>
+      <hr>
+     <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+
+        <h3>Order Summary</h3>
+        <div class="col-sm-6">
+          <ul>
+            {% for product in products %}
+              <li><h5>{{product.name}}</h5></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-sm-6">
+          {% for message in messages %}
+          <h4>{{message}}</h4>
+          {% endfor %}
+        </div>
+      </div>
+      </div>
+      <hr>
+    <h3>You spent ${{total}}... BUT YOU SAVED ${{saved|floatformat:2}}!</h3>
+    <hr>
+    <h2>Other Products you may be interested in</h2>
+    {% for product in other_products %}
+    <a class="" href="/product/show/{{ product.id }}">
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 panel panel-default text-center all_deals no-padding">
+          <div class="panel-heading">
+            <h4 class="name-font">{{ product.name }}</h4>
+            <h5 class="name-font">Ends {{ product.expire_date }}</h5>
+          </div>
+          <div class="panel-body">
+            <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
+          </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  </body>
+</html>

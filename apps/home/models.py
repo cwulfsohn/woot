@@ -152,11 +152,17 @@ class Cart(models.Model):
 
     objects = CartManager()
 
+class Order(models.Model):
+    user = models.ForeignKey(User, related_name="user_orders")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class Purchase(models.Model):
     user = models.ForeignKey(User, related_name="user_purchase")
     product = models.ForeignKey(Product, related_name="product_purchase")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    order = models.ForeignKey(Order, related_name="order_purchases", null=True)
 
     objects = PurchaseManager()
 

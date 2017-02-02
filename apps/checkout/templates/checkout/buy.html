@@ -3,14 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>Review</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css "href="{% static 'checkout/css/styles.css' %}">
+    <link rel="stylesheet" type="text/css "href="{% static 'home/css/styles.css' %}">
     <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   </head>
   <body>
-    <div class="container">
-      <h1>Review</h1>
+    <div class="container" id="products">
+      <h1 class="centered">Review</h1>
+      <hr>
       <div class="row">
         <h3 class="col-sm-3">Selected Address:</h3>
         <div class="col-sm-6">
@@ -27,40 +31,43 @@
           <h4><a href="{% url 'checkout:address' %}">Change</a></h4>
         </div>
       </div>
+      <hr>
       <div class="row">
         <h3 class="col-sm-3">Selected Payment:</h3>
         {% if card %}
           <h5 class="col-sm-6">
-            Card ending in ****{{card.last_four}}
+            <p>Card ending in ****{{card.last_four}}</p>
           </h5>
         {% else %}
             <h3 class="col-sm-6">No card selected</h3>
         {% endif %}
         <h4 class="col-sm-3"><a href="{% url 'checkout:billing' %}">Change</a></h4>
       </div>
-      <h3 >Review Cart:</h3>
+      <hr>
+      <div class="row">
+      <h3 class="col-sm-3">Review Cart:</h3>
         {% for product in cart_products %}
-        <div class="row">
-          <div class="col-sm-3">
-          </div>
+        <div class="col-sm-9 row">
             {% load static %}
-            <div class="col-sm-3"><img class="col-sm-12" src="{% static product.primary_image %}"></div>
-            <div class="col-sm-3"><h4>{{product.name}} x {{product.quantity}}</h4></div>
-            <div class="col-sm-3"><h4>{{product.price|floatformat:2}}</h4></div>
+            <div class="col-sm-4"><img class=" img-responsive small_images" src="{% static product.primary_image %}"></div>
+            <div class="col-sm-4"><h4>{{product.name}} x {{product.quantity}}</h4></div>
+            <div class="col-sm-4"><h4>{{product.price|floatformat:2}}</h4></div>
           </div>
         {% endfor %}
-      <div class="row">
-        <h3 class="col-sm-3">Total</h3>
-        <h3 class="col-sm-3">{{total|floatformat:2}}</h3>
       </div>
-      {% if address and card %}
-        <form action="{% url 'checkout:purchase' %}" method="post">
+      <hr>
+      <div class="row">
+      {% if address and card and cart_products %}
+        <form class="col-sm-6" action="{% url 'checkout:purchase' %}" method="post">
           {% csrf_token %}
           <input class="btn btn-success" type="submit" value="Purchase">
         </form>
       {% else %}
-        <p class="btn btn-danger">Must select card and address before checkout</p>
+        <p class="col-sm-6 btn btn-danger">Must select card and address before checkout</p>
       {% endif %}
+      <p class="big col-sm-3">Total:</p>
+      <p class="big col-sm-3">${{total|floatformat:2}}</p>
+      </div>
     </div>
   </body>
 </html>

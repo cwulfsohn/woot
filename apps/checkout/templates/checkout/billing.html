@@ -21,9 +21,11 @@
   </head>
   <body>
     <div class="container">
+      {% if messages %}
       {% for message in messages %}
         <p>{{message}}</p>
       {% endfor %}
+      {% endif %}
       <h1>Select a payment method</h1>
       {% if not cards %}
       <h2>You have no saved payment methods</h2>
