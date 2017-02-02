@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
 from datetime import datetime, timedelta
-import datetime
 from django.contrib import messages
 from django.db.models import Count
 import json
@@ -279,28 +278,41 @@ def rating(request, id):
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
-<<<<<<< HEAD
-def stat(request):
-    today = datetime.date.today()
-    first_day = datetime.date.today()-timedelta(days=6)
+def stat(request, id):
+    today = datetime.now().date()
+    first_day = datetime.now().date()-timedelta(days=6)
     daily_deal = []
-    product_id = Product.objects.get(id = 5)
+    product_id = Product.objects.get(id = id)
     category_id = Category.objects.get(subcategories__products__id = product_id.id)
     product_list = Product.objects.filter(subcategory__category__category = category_id.category)
+    category_count = 0
+    product_percent = []
     for category_products in product_list:
-        print category_products.name
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            category_count += 1
+    for category_products in product_list:
+        count = 0
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            count += 1
+        holder = []
+        holder.append(category_products.name)
+        holder.append(float(count/category_count))
+        product_percent.append(holder)
     product = Product.objects.filter(daily_deal = 1)
     for products in product:
         deal = []
+        purchase_count = 0
         if str(products.deal_date) <= str(today) and str(products.deal_date) > str(first_day):
+            for purchases in Purchase.objects.filter(product_id = products.id):
+                purchase_count += 1
             deal.append(products.name)
-            deal.append(5)
+            deal.append(purchase_count)
             daily_deal.append(deal)
     context = {
         'daily_deal':json.dumps(daily_deal),
+        'product_percent':json.dumps(product_percent)
     }
     return render(request, 'home/stat_test.html', context)
-=======
 def manage_products(request):
     if 'admin_level' not in request.session:
         return redirect('home:index')
@@ -368,4 +380,3 @@ def delete_product(request, id):
     message = "Product Successfully Deleted!"
     messages.success(request, message)
     return redirect('home:manage_products')
->>>>>>> 798e2bb226fb6d13d16ec9e0fea08f99277bc87b
