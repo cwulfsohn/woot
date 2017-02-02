@@ -13,7 +13,7 @@ class SubcategoryManager(models.Manager):
         pass
 
 class ProductManager(models.Manager):
-    def validate(self, name, description, price, list_price, quantity, expire_date, deal_date, id):
+    def validate(self, name, description, price, list_price, quantity, expire_date, deal_date, id=None):
         errors = []
         if len(name) < 2:
             errors.append("Name must be at least 2 characters long")

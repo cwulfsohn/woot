@@ -331,4 +331,7 @@ def update_product(request, id):
         return redirect('home:manage_products')
 
 def delete_product(request, id):
-    pass
+    Product.objects.filter(id=id).delete()
+    message = "Product Successfully Deleted!"
+    messages.success(request, message)
+    return redirect('home:manage_products')

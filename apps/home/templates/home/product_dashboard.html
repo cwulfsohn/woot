@@ -41,7 +41,7 @@
           <th>Daily Deal</th>
           <th>Daily Deal Date</th>
           <th>Quantity</th>
-          <th>Subcategory ID</th>
+          <th>Subcategory</th>
           <th>Primary Image</th>
           <th>Actions</th>
         </tr>
@@ -50,7 +50,7 @@
         {% for product in all_products %}
           <tr>
             <td>{{product.id}}</td>
-            <td>{{product.name}}</td>
+            <td class='col-xs-1'>{{product.name}}</td>
             <td class='col-xs-2'>{{product.description}}</td>
             <td>{{product.price}}</td>
             <td>{{product.list_price}}</td>
@@ -59,10 +59,10 @@
             <td>{{product.daily_deal}}</td>
             <td>{{product.deal_date}}</td>
             <td>{{product.quantity}}</td>
-            <td>{{product.subcategory.id}}</td>
+            <td>{{product.subcategory.subcategory}}</td>
             <td>{{product.primary_image}}</td>
             <td><a href="{% url 'home:edit_product' id=product.id %}">Edit</a> |
-              <a href="{% url 'home:delete_product' id=product.id %}">Delete</a></td>
+              <a href="{% url 'home:delete_product' id=product.id %}">Delete</a> | <a href="{% url 'home:features' id=product.id %}">Edit Features</a> | <a href="{% url 'home:specifications' id=product.id %}">Edit Specs</a></td>
           </tr>
         {% endfor %}
       </tbody>
