@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Checkout</title>
+    {% load staticfiles  %}
+    <link rel="stylesheet" type="text/css "href="{% static 'checkout/css/styles.css' %}">
+    <link rel="stylesheet" type="text/css "href="{% static 'home/css/styles.css' %}">
     <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -10,23 +13,31 @@
   <body>
     <div class="container">
       <h2>Shopping Cart </h2>
+      <hr>
       <div id="products">
         <div class="row">
           <div class="col-sm-6"></div>
-          <p class="col-sm-3">Quantity</p>
-          <p class="col-sm-3">Price</p>
+          <p class="big col-sm-3">Quantity</p>
+          <p class="big col-sm-3">Price</p>
         </div>
+        <hr>
         {% for product in cart_products %}
           <div class="row">
             <div class="col-sm-6">
               {% load static %}
-              <img class=" col-sm-6" src="{% static product.primary_image %}" >
-              <h3><a href="{% url 'home:show_product' id=product.id %}">{{product.name}}</a></h3>
-              <a href="{% url 'checkout:remove' id=product.id %}">Remove All</a>
+              <img class="small_images" src="{% static product.primary_image %}" >
+              <a class="big" href="{% url 'home:show_product' id=product.id %}">{{product.name}}</a>
             </div>
-            <h3 class="col-sm-3">{{product.quantity}}</h3>
-            <h3 class="col-sm-3">{{product.price|floatformat:2}}</h3>
+            <div class="col-sm-3">
+              <p>&nbsp;</p>
+              <p class="big">{{product.quantity}}</p><a href="{% url 'checkout:remove' id=product.id %}">Remove All</a>
+            </div>
+            <div class="col-sm-3">
+              <p>&nbsp;</p>
+              <p class="big">${{product.price|floatformat:2}}</p>
+            </div>
           </div>
+          <hr>
         {% endfor %}
         <div class="row">
           {% if cart_products %}
@@ -35,10 +46,22 @@
           </div>
           {% endif %}
           <div class="col-sm-3">
-            <h3>Total: {{total|floatformat:2}}</h3>
+            <p class="big">Total: ${{total|floatformat:2}}</p>
           </div>
         </div>
       </div>
+      <h2>Things you missed out on</h2>
+      {% for expired in expireds %}
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 panel panel-default text-center all_deals no-padding">
+            <div class="panel-heading">
+              <h4 class="name-font">{{ expired.name }}</h4>
+              <h5 class="name-font">{{ expired.expire_date }}</h5>
+            </div>
+            <div class="panel-body">
+              <img class="img-responsive text-center small_images" src="{% static expired.primary_image %}" alt="{{ product.name }}">
+            </div>
+        </div>
+      {% endfor %}
     </div>
   </body>
 </html>

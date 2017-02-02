@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
 from datetime import datetime, timedelta
-import datetime
 from django.contrib import messages
 from django.db.models import Count
 import json
