@@ -26,7 +26,7 @@
           </button>
           <a class="navbar-brand lighter-font white-text" href="{% url 'home:index' %}"><span class="white-text h1">woot!</span> Deals & Shenanigans</a>
         </div>
-        <div class="navbar-collapse bottom-border" id="bs-example-navbar-collapse-1">
+        <div class="navbar-collapse bottom-border">
           <ul class="nav navbar-nav navbar-right">
             <li>
               <a class="underline lighter-font" href="#">Community</a>
@@ -86,52 +86,56 @@
     </nav><!-- End NAVBAR -->
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
     <div class="container">
-      <div id="category_list" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+      <div id="category_list" class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
         <p class="gray_font">{{ this_category.category }} Categories</p>
         <hr>
         <ul class="list-unstyled list-group">
           <li class="list-group-item-heading">All (number here)</li>
           {% for subcat in this_cat_subcategories %}
-          <li class="list-group-item-heading"><a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({{ subcat.products.count }})</a></li>
+          <li class="list-group-item-heading">&nbsp;&nbsp;<a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({{ subcat.products.count }})</a></li>
           {% endfor %}
         </ul>
       </div>
-      <div id="product_area" class="col-lg-10 col-md-10 col-sm-6 col-xs-12 ">
-        <div id="deal-info" class="img-responsive col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <h3 class="name-font">{{ main_product.name }}</h3>
-          <p class="name-font h2">${{ main_product.price|floatformat:2 }}  <span class="gray_font h5"><span class="strikethrough">${{ main_product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </span></p>
-          <hr>
-          <div id="image-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            {% load static %}
+      {% if main_product %}
+      <div id="deal-info" class="img-responsive col-lg-9 col-md-9 col-sm-9 col-xs-12 row">
+        <h3 class="name-font">{{ main_product.name }}</h3>
+        <p class="name-font h2">${{ main_product.price|floatformat:2 }}  <span class="gray_font h5"><span class="strikethrough">${{ main_product.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </span></p>
+        <hr>
+        <div id="image-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          {% load static %}
 
-            <img class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-responsive" src="{% static main_product.primary_image %}" alt="">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <p>Description:</p>
-              <p>{{ main_product.description }}</p>
-            </div>
+          <img class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-responsive" src="{% static main_product.primary_image %}" alt="">
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <p>Description:</p>
+            <p>{{ main_product.description }}</p>
           </div>
-          <a href="/product/show/{{ main_product.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
-          <hr>
-          {% if comments %}
-          {% for comment in comments %}
-          <p><strong>{{ comment.author.username}}</strong>   <a href="/discussion/product/{{ main_product.id }}"><button class="pull-right btn-lg btn-success bottom-border">join the discussion</button></a></p>
-          <p>{{ comment.content }} </p>
-          {% endfor %}
-          {% endif %}
-          {% if not comments %}
-          <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
-          {% endif %}
-          <hr>
         </div>
+        <a href="/product/show/{{ main_product.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
+        <hr>
+        {% if comments %}
+        {% for comment in comments %}
+        <p><strong>{{ comment.author.username}}</strong>   <a href="/discussion/product/{{ main_product.id }}"><button class="pull-right btn-lg btn-success bottom-border">join the discussion</button></a></p>
+        <p>{{ comment.content }} </p>
+        {% endfor %}
+        {% endif %}
+        {% if not comments %}
+        <p>No posts yet? WHAT? Somebody help fix that by saying something cool. <a href="/discussion/product/{{ main_product.id }}"><button class="pull-right btn-lg btn-success bottom-border">join the discussion</button></a></p>
+        <p>&nbsp;</p>
+        {% endif %}
+        <hr>
       </div>
-      <div id="all_deals">
+      <div id="all_deals" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      {% else %}
+      <div id="all_deals" class="col-lg-9 col-md-9 col-sm-6 col-xs-12 row">
+        <div>&nbsp;</div><div>&nbsp;</div>
+      {% endif %}
         <h4 class="text-center"> All {{ this_category.category }} Deals</h4>
         {% for product in all_products %}
-        <a href="/product/show/{{ product.id }}">
-          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 panel panel-success text-center all_deals no-padding">
+        <a class="" href="/product/show/{{ product.id }}">
+          <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 panel panel-default text-center all_deals no-padding">
               <div class="panel-heading">
-                <h4>{{ product.name }}</h4>
-                <h5>Ends {{ product.expire_date }}</h5>
+                <h4 class="name-font">{{ product.name }}</h4>
+                <h5 class="name-font">Ends {{ product.expire_date }}</h5>
               </div>
               <div class="panel-body">
                 <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">

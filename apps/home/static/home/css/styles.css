@@ -11,6 +11,11 @@
   color:#FFFFFF !important;
 }
 
+#categories {
+  min-width: 1200px;
+}
+
+
 #main-nav li:first-child {
   color:#FFFFFF
 }
@@ -59,13 +64,13 @@
 }
 
 @media (max-width: 767px)
-.navbar-default .navbar-nav .open .dropdown-menu>li>a {
-    color: #FFF;
+.navbar-default .navbar-nav .open .dropdown-menu>li>a, {
+    color: #000;
 }
 
 @media (max-width: 767px)
 .navbar-nav .open .dropdown-menu .dropdown-header, .navbar-nav .open .dropdown-menu>li>a {
-    color: #FFF;
+    color: #000;
 }
 
 @media screen and (min-width: 768px) {
@@ -74,6 +79,49 @@
             display:block;
       }
 }
+
+@media (max-width: 991px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .navbar-text {
+        float: none;
+        margin: 15px 0;
+    }
+    /* since 3.1.0 */
+    .navbar-collapse.collapse.in {
+        display: block!important;
+    }
+    .collapsing {
+        overflow: hidden!important;
+    }
+
+    body {
+      margin-top: 50px
+    }
+}
+
 
 .name-font {
   font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
@@ -109,17 +157,6 @@ form > span {
   padding-left: 5px
 }
 
-/*
-.bordered {
-  box-shadow: : 2px 2px 2px 1px #7BA740;
-  -webkit-box-shadow: : 2px 2px 2px 1px #7BA740;
-  -moz-box-shadow: : 2px 2px 2px 1px #7BA740;
-  -o-box-shadow: : 2px 2px 2px 1px #7BA740;
-  margin: 5px 0px;
-  padding: 0px
-}
-*/
-
 .small_images {
   height: 200px;
   margin: auto;
@@ -145,4 +182,19 @@ form > span {
 
 .gray-border {
   border: 1px solid gray;
+}
+
+#category_list > ul > li > a {
+  font-weight: 400;
+  color: #222222;
+}
+
+.all_deals > .panel-footer{
+  height: 85px;
+  padding: 5px
+}
+
+.all_deals > img {
+  height: 150px;
+  margin-right: 15px;
 }

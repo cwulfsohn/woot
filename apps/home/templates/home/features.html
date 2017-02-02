@@ -11,6 +11,7 @@
   <body>
     <div class="container">
       <div class="page-header">
+        <a class="btn btn-success pull-right" href="{% url 'home:manage_products' %}">Return to Manage Products</a>
         <h2>Features</h2>
         <h3>Product: {{product.name}}</h3>
       </div>
@@ -52,6 +53,7 @@
       </form>
     </div>
     <div class="container">
+
       <a href="{% url 'home:specifications' id=product.id %}" class="btn btn-success pull-right">Next</a>
     </div>
     <div class="container">
