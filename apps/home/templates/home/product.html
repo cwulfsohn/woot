@@ -20,15 +20,15 @@
     <nav id="main-nav" class="nav-color navbar navbar-default white-text navbar-fixed-top" role="navigation">
       <div class="container">
         <div id="nav-header" class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="navbar">
+          <button id="collapse-nav" type="button" class="navbar-toggle collapsed " data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand lighter-font white-text" href="{% url 'home:index' %}"><span class="white-text h1">woot!</span> Deals & Shenanigans</a>
+          <a class="navbar-brand lighter-font white-text" href="{% url 'home:index' %}"><span class="white-text h1">fööt!</span> Deals & Shenanigans</a>
         </div>
-        <div class="navbar-collapse bottom-border" id="bs-example-navbar-collapse-1">
+        <div class="navbar-collapse bottom-border" id="navbar">
           <ul class="nav navbar-nav navbar-right">
             <li>
               <a class="underline lighter-font" href="#">Community</a>
@@ -36,16 +36,16 @@
             {% if request.session.username %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
+              <ul class="dropdown-menu nav-color">
+                <li><a class="white-text" href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
-                <li><a href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
+                <li><a class="white-text" href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
                 <li class="divider"></li>
                 {% if request.session.admin_level == 4 %}
-                <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
+                <li><a class="white-text" href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
                 <li class="divider"></li>
                 {% endif %}
-                <li><a href="{% url 'login:logout' %}">Sign Out</a></li>
+                <li><a class="white-text" href="{% url 'login:logout' %}">Sign Out</a></li>
               </ul>
             </li>
             {% endif %}
@@ -61,13 +61,13 @@
             {% for category in categories %}
             <li class="dropdown">
               <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
-              <ul class="dropdown-menu collapse">
-                <li><a href="{% url 'home:category' id=category.id %}">See all {{ category.category }} deals</a></li>
+              <ul class="dropdown-menu collapse nav-color">
+                <li><a class="white-text" href="{% url 'home:category' id=category.id %}">See all {{ category.category }} deals</a></li>
                 <li role="separator" class="divider"></li>
-                <li class="dropdown-header">Subcategories</li>
+                <li class="dropdown-header white-text">Subcategories</li>
                 {% for subcat in subcategories %}
                   {% if subcat.category.id == category.id%}
-                    <li><a href="{% url 'home:subcategory' id=subcat.id %}"> {{subcat.subcategory}}</a></li>
+                    <li><a class="white-text" href="{% url 'home:subcategory' id=subcat.id %}"> {{subcat.subcategory}}</a></li>
                   {% endif %}
                 {% endfor %}
               </ul>
@@ -75,9 +75,9 @@
             {% endfor %}
             <li class="dropdown">
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
-              <ul class="dropdown-menu collapse">
-                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-md btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
+              <ul class="dropdown-menu collapse nav-color">
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center white-text" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>

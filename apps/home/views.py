@@ -565,6 +565,8 @@ def get_order_basket(request, id):
     return order_basket
 
 def order(request, id):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     user = User.objects.get(id=request.session["id"])
     order = Order.objects.get(id=id)
     if not order.user == user:
@@ -573,5 +575,5 @@ def order(request, id):
     total = 0
     for product in order_basket:
         total =+ product["price"]
-    context = {"order":order, "order_basket":order_basket, "total":total}
+    context = {"order":order, "order_basket":order_basket, "total":total, "categories": categories, "subcategories": subcategories}
     return render(request, 'home/order.html', context)

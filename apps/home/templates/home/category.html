@@ -37,7 +37,7 @@
               <ul class="dropdown-menu nav-color">
                 <li><a class="white-text" href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
-                <li><a class="white-text" href="{% url 'login:orders' %}">Stuff You've Bought</a></li>
+                <li><a class="white-text" href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
                 <li class="divider"></li>
                 {% if request.session.admin_level == 4 %}
                 <li><a class="white-text" href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
@@ -75,7 +75,7 @@
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse nav-color">
                 <li><a href="{% url 'checkout:buy' %}"><button class="btn-lg btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
+                <li><a class="text-center white-text" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>
