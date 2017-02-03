@@ -44,17 +44,16 @@
         <h4 class="col-sm-3"><a href="{% url 'checkout:billing' %}">Change</a></h4>
       </div>
       <hr>
-      <div class="row">
-      <h3 class="col-sm-3">Review Cart:</h3>
+      <h3>Review Cart:</h3>
         {% for product in cart_products %}
-        <div class="col-sm-9 row">
+        <div class="row">
             {% load static %}
-            <div class="col-sm-4"><img class=" img-responsive small_images" src="{% static product.primary_image %}"></div>
-            <div class="col-sm-4"><h4>{{product.name}} x {{product.quantity}}</h4></div>
-            <div class="col-sm-4"><h4>{{product.price|floatformat:2}}</h4></div>
+            <div class="col-sm-3"><img class=" img-responsive small_images" src="{% static product.primary_image %}"></div>
+            <div class="col-sm-5"><h4>{{product.name}} x {{product.quantity}}</h4></div>
+            <div class="col-sm-2"><h4>{{product.price|floatformat:2}}</h4></div>
+            <div class="col-sm-2"><h4><a href="{% url 'checkout:index' %}">Edit</a></h4></div>
           </div>
         {% endfor %}
-      </div>
       <hr>
       <div class="row">
       {% if address and card and cart_products %}

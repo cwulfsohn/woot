@@ -163,7 +163,8 @@ form > span {
 }
 
 .discussion_all_deals > img {
-  max-height: 200px;
+  height: 150px;
+  width: 175px;
 }
 
 .product_list{
@@ -197,6 +198,7 @@ form > span {
 .all_deals > img {
   height: 150px;
   margin-right: 15px;
+  margin-bottom: 30px;
 }
 
 
