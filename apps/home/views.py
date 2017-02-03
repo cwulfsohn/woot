@@ -24,6 +24,7 @@ def get_cart_products(request):
         cart_products.append(cart_product)
     return cart_products
 
+
 # Create your views here.
 def index(request):
     if 'id' not in request.session:
@@ -42,6 +43,25 @@ def index(request):
     bestsellers = Product.objects.annotate(sold=Count('product_purchase__product_id')).exclude(id = daily_deal.id).order_by('-sold')[:4]
     new_items = Product.objects.exclude(id= daily_deal.id).order_by('-created_at')[:4]
     last_chance = Product.objects.exclude(id = daily_deal.id).filter(quantity__gt=0).order_by('quantity')[:4]
+    today = datetime.now().date()
+    start_date = datetime.min.time()
+    end_date = datetime.max.time()
+    start_range = datetime.combine(today, start_date)
+    end_range = datetime.combine(today, end_date)
+    the_daily_deal = []
+    deal = Product.objects.filter(daily_deal = 1).filter(deal_date__range=[str(start_range),str(end_range)])
+    time_count = 1
+    for deals in deal:
+        while time_count < 25:
+            counter = 0
+            holder = []
+            for purchases in Purchase.objects.filter(product_id = deals.id):
+                if purchases.created_at.strftime("%H") == str(time_count):
+                    counter += 1
+            holder.append(time_count)
+            holder.append(counter)
+            the_daily_deal.append(holder)
+            time_count += 1
     context = {'categories': categories,
                'subcategories': subcategories,
                'daily_deal': daily_deal,
@@ -52,6 +72,7 @@ def index(request):
                'bestsellers': bestsellers,
                'new_items': new_items,
                'last_chance': last_chance,
+               'the_daily_deal':json.dumps(the_daily_deal)
                }
     return render(request, 'home/index.html', context)
 
@@ -125,8 +146,10 @@ def category(request, id):
     this_cat_subcategories = Subcategory.objects.filter(category = category)
     ending_soon = Product.objects.filter(subcategory__category=category, active = True, quantity__gt=0).order_by('expire_date')[:4]
     total_products = {}
+    category_total = 0
     for cat in this_cat_subcategories:
         total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
+        category_total += total_products[cat.id]
     if ending_soon:
         main_product = ending_soon[0]
         images = Image.objects.filter(product=main_product)
@@ -149,6 +172,7 @@ def category(request, id):
                'percent_off': percent_off,
                'all_products': all_products,
                'total_products': total_products,
+               'category_total': category_total,
                }
     return render(request, 'home/category.html', context)
 
@@ -159,8 +183,10 @@ def subcategory(request, id):
     category = Category.objects.get(id = subcategory.category_id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
     total_products = {}
+    category_total = 0
     for cat in this_cat_subcategories:
         total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
+        category_total += total_products[cat.id]
     all_products = Product.objects.filter(subcategory = subcategory, active = True, quantity__gt=0).order_by('expire_date')
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -169,6 +195,7 @@ def subcategory(request, id):
                'this_cat_subcategories': this_cat_subcategories,
                'all_products': all_products,
                'total_products': total_products,
+               'category_total': category_total,
                }
     return render(request, 'home/subcategory.html', context)
 
@@ -181,7 +208,9 @@ def show_product(request, id):
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     if product.active == False:
-        return redirect(reverse('home:index'))
+        active = False
+    else:
+        active = True
     over = False
     if cart_products:
         for cart_product in cart_products:
@@ -203,10 +232,43 @@ def show_product(request, id):
         avg_rating = round(avg_rating, 1)
     except:
         pass
-    stats = stat(id)
-    for key,value in stats.items():
-        print key
-        print value
+    today = datetime.now().date()
+    first_day = datetime.now().date()-timedelta(days=6)
+    daily_deal = []
+    product_id = Product.objects.get(id = id)
+    category_id = Category.objects.get(subcategories__products__id = product_id.id)
+    product_list = Product.objects.filter(subcategory__category__category = category_id.category)
+    category_count = 0
+    product_percent = []
+    for category_products in product_list:
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            category_count += 1
+    for category_products in product_list:
+        count = 0
+        for purchases in Purchase.objects.filter(product_id = category_products.id):
+            count += 1
+        holder = []
+        holder.append(category_products.name)
+        holder.append(float(float(count)/float(category_count)))
+        product_percent.append(holder)
+    show_item = 0
+    for purchases in Purchase.objects.filter(product_id = product_id.id):
+        show_item += 1
+    purchase_deal  = []
+    purchase_deal.append(product_id.name)
+    purchase_deal.append(show_item)
+    daily_deal.append(purchase_deal)
+    product_object = Product.objects.filter(daily_deal = 1)
+    for products in product_object:
+        deal = []
+        purchase_count = 0
+        if str(products.deal_date) <= str(today) and str(products.deal_date) > str(first_day):
+            for purchases in Purchase.objects.filter(product_id = products.id):
+                purchase_count += 1
+            deal.append(products.name)
+            deal.append(purchase_count)
+            daily_deal.append(deal)
+    print daily_deal
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
@@ -217,7 +279,10 @@ def show_product(request, id):
                'avg_rating': avg_rating,
                'features': features,
                'specifications': specifications,
-               "over":over
+               'over':over,
+               'active': active,
+               'daily_deal':json.dumps(daily_deal),
+               'product_percent':json.dumps(product_percent)
                }
     return render(request, 'home/product.html', context)
     # except:
@@ -367,50 +432,6 @@ def rating(request, id):
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
 
-
-def stat(request, id):
-    today = datetime.now().date()
-    first_day = datetime.now().date()-timedelta(days=6)
-    daily_deal = []
-    product_id = Product.objects.get(id = id)
-    category_id = Category.objects.get(subcategories__products__id = product_id.id)
-    product_list = Product.objects.filter(subcategory__category__category = category_id.category)
-    category_count = 0
-    product_percent = []
-    for category_products in product_list:
-        for purchases in Purchase.objects.filter(product_id = category_products.id):
-            category_count += 1
-    for category_products in product_list:
-        count = 0
-        for purchases in Purchase.objects.filter(product_id = category_products.id):
-            count += 1
-        holder = []
-        holder.append(category_products.name)
-        holder.append(float(float(count)/float(category_count)))
-        product_percent.append(holder)
-    show_item = 0
-    for purchases in Purchase.objects.filter(product_id = product_id.id):
-        show_item += 1
-    purchase_deal  = []
-    purchase_deal.append(product_id.name)
-    purchase_deal.append(show_item)
-    daily_deal.append(purchase_deal)
-    product = Product.objects.filter(daily_deal = 1)
-    for products in product:
-        deal = []
-        purchase_count = 0
-        if str(products.deal_date) <= str(today) and str(products.deal_date) > str(first_day):
-            for purchases in Purchase.objects.filter(product_id = products.id):
-                purchase_count += 1
-            deal.append(products.name)
-            deal.append(purchase_count)
-            daily_deal.append(deal)
-    context = {
-        'daily_deal':json.dumps(daily_deal),
-        'product_percent':json.dumps(product_percent)
-    }
-    return render(request, 'home/stat_test.html', context)
-
 def daily_stat(request, id):
     today = datetime.now().date()
     start_date = datetime.min.time()
@@ -510,3 +531,47 @@ def delete_product(request, id):
     message = "Product Successfully Deleted!"
     messages.success(request, message)
     return redirect('home:manage_products')
+
+def orders(request):
+    if not "id" in request.session:
+        return redirect(reverse('home:index'))
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    user = request.session["id"]
+    orders = Order.objects.filter(user=user).order_by("-created_at")
+    order_totals = {}
+    for order in orders:
+        total = 0
+        purchases = Purchase.objects.filter(order=order)
+        for purchase in purchases:
+            total += purchase.product.price
+        order_totals[order.id] = total
+    context = {"orders":orders, "categories":categories, "subcategories":subcategories, "order_totals":order_totals}
+    return render(request, 'home/orders.html', context)
+
+def get_order_basket(request, id):
+    user = User.objects.get(id=request.session["id"])
+    order = Order.objects.get(id=id)
+    order_basket = []
+    products = Product.objects.filter(product_purchase__order=order).distinct()
+    quantities = Order.objects.filter(id=order.id).values('order_purchases__product__name').order_by().annotate(Count('order_purchases__product__name'))
+    for product in products:
+        order_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
+        for quantity in quantities:
+            if quantity["order_purchases__product__name"] == product.name:
+                order_product["quantity"] = quantity["order_purchases__product__name__count"]
+        order_product["price"] = order_product["quantity"] * product.price
+        order_basket.append(order_product)
+    return order_basket
+
+def order(request, id):
+    user = User.objects.get(id=request.session["id"])
+    order = Order.objects.get(id=id)
+    if not order.user == user:
+        return redirect(reverse('home:index'))
+    order_basket = get_order_basket(request, id)
+    total = 0
+    for product in order_basket:
+        total =+ product["price"]
+    context = {"order":order, "order_basket":order_basket, "total":total}
+    return render(request, 'home/order.html', context)

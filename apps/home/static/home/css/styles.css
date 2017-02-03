@@ -54,6 +54,11 @@
   font-size: 2em;
 }
 
+.navbar-nav>li>.dropdown-menu{
+  background-color: #5A9525;
+}
+
+
 .navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a,
 .navbar .nav > li.dropdown.open > ul.dropdown-menu > li > a:hover
@@ -78,6 +83,16 @@
 .custom-collapse .collapse{
             display:block;
       }
+
+.dropdown-toggle:active, .open .dropdown-toggle, .dropdown:hover {
+    color: #FFF !important;
+}
+
+/* Changes the color of link text <a> after navbar has collapsed for small screen or mobile mode */
+#categories > ul > li > ul > li {
+    color: #FFF !important;;
+}
+
 }
 
 @media (max-width: 991px) {
@@ -104,10 +119,14 @@
     .navbar-nav>li>a {
         padding-top: 10px;
         padding-bottom: 10px;
+        color: #FFF
     }
+
+    .navbar .nav > li.dropdown.open.active > a:hover,
+    .navbar .nav > li.dropdown.open > a,
+    .navbar .nav > li.dropdown.open > ul.dropdown-menu > li > a:hover
     .navbar-text {
-        float: none;
-        margin: 15px 0;
+        color: #FFF
     }
     /* since 3.1.0 */
     .navbar-collapse.collapse.in {
@@ -116,6 +135,9 @@
     .collapsing {
         overflow: hidden!important;
     }
+
+    .dropdown-menu>li>a {
+      color: #fff;
 
     body {
       margin-top: 50px

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Woot: Daily Deals for Electronics</title>
     {% load staticfiles %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static 'home/css/bootstrap.min.css' %}">
     <link href="{% static 'home/css/styles.css' %}" rel="stylesheet">
@@ -37,7 +39,7 @@
               <ul class="dropdown-menu">
                 <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
-                <li><a href="#">Stuff You've Bought</a></li>
+                <li><a href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
                 <li class="divider"></li>
                 {% if request.session.admin_level == 4 %}
                 <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
@@ -74,7 +76,8 @@
             <li class="dropdown">
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-md btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>
@@ -113,7 +116,11 @@
               </select>
               {% endif %}
               <p>Shipping: <strong>Standard</strong></p>
-              <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
+              {% if active %}
+              <input class="btn-lg btn-warning" type="submit" value="Add To Cart">
+              {% else %}
+              <button class="btn-lg btn-danger disabled">Sold Out!</button>
+              {% endif %}
             </form>
             <hr>
             {% if not rated %}
@@ -143,7 +150,7 @@
             {% if not comments %}
             <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
             {% endif %}
-            <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
+            <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
             <hr>
             <h5>Description:</h5>
             <p>{{ product.description }}</p>
@@ -184,7 +191,100 @@
                 {% endif %}
               </div>
               <div role="tabpanel" class="tab-pane" id="statistics">
-                Stats go here!
+                <div id="chart_container" style="width:560px; height:400px;"></div>
+                <div id="container" style="width:560px; height:400px;"></div>
+                <script>
+                var daily_product = {{daily_deal| safe}}
+                  $(function () {
+                    Highcharts.chart('chart_container', {
+                   chart: {
+                       type: 'column'
+                   },
+                   title: {
+                       text: 'Rolling 7 Daily Deal by Product Quantity Sold '
+                   },
+                   xAxis: {
+                       type: 'category',
+                       labels: {
+                           rotation: -45,
+                           style: {
+                               fontSize: '13px',
+                               fontFamily: 'Verdana, sans-serif'
+                           }
+                       }
+                   },
+                   yAxis: {
+                       min: 0,
+                       title: {
+                           text: 'Quantity Sold'
+                       }
+                   },
+                   legend: {
+                       enabled: false
+                   },
+                   tooltip: {
+                       pointFormat: 'Sold Products:<b>{point.y}</b>'
+                   },
+                   series: [{
+                       name: 'Population',
+                       data: daily_product,
+                       dataLabels: {
+                           enabled: true,
+                           rotation: -90,
+                           color: '#FFFFFF',
+                           align: 'right',
+                           format: '{point.y}',
+                           y: 10, // 10 pixels down from the top
+                           style: {
+                               fontSize: '13px',
+                               fontFamily: 'Verdana, sans-serif'
+                           }
+                       }
+                   }]
+               });
+            });
+                </script>
+                <script type="text/javascript">
+                var product_percent = {{product_percent| safe}}
+                console.log(product_percent)
+                $(function () {
+                  Highcharts.chart('container', {
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false
+                        },
+                        title: {
+                            text: '% of Products Purchased by Category'
+                        },
+                        tooltip: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    color: '#000000',
+                                    connectorColor: '#000000',
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                    formatter: function() {
+                                        return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                                    }
+                                }
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            name: 'Browser share',
+                            data: product_percent
+                        }]
+                    });
+                });
+              </script>
               </div>
             </div>
           </div>
