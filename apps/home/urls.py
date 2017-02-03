@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^reply/(?P<id>\d+)$', views.reply, name="reply"),
     url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
     url(r'^stat/(?P<id>\d+)$', views.stat, name='stat'),
+    url(r'^orders/$', views.orders, name='orders'),
+    url(r'^order/(?P<id>\d+)/$', views.order, name='order'),
 ]

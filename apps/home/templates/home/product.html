@@ -37,7 +37,7 @@
               <ul class="dropdown-menu">
                 <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
-                <li><a href="#">Stuff You've Bought</a></li>
+                <li><a href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
                 <li class="divider"></li>
                 {% if request.session.admin_level == 4 %}
                 <li><a href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
