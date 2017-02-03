@@ -31,7 +31,7 @@
         <div class="navbar-collapse bottom-border" id="navbar">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a class="underline lighter-font" href="#">Community</a>
+              <a class="underline lighter-font" href="{% url 'home:community' %}">Community</a>
             </li>
             {% if request.session.username %}
             <li class="dropdown">

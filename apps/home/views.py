@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, date, time
 from django.contrib import messages
 from django.db.models import Count
 from django.db.models import Avg
 import json
+import calendar
 import decimal
+
 
 def get_cart_products(request):
     user = User.objects.get(id=request.session["id"])
@@ -34,6 +36,8 @@ def index(request):
     today = datetime.now().date()
     try:
         daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
+        daily_deal.active = True
+        daily_deal.save()
     except:
         daily_deal = Product.objects.filter(daily_deal=True, active = True, quantity__gt=0).order_by('expire_date')[:1]
         daily_deal = daily_deal[0]
@@ -387,6 +391,8 @@ def discussion(request, id):
     return render(request, 'home/discussion.html', context)
 
 def comment(request):
+    if 'id' not in request.session:
+        return redirect(reverse('login:index'))
     if request.method == 'POST':
         comment = request.POST['comment']
         product_id = request.POST['product_id']
@@ -434,31 +440,6 @@ def rating(request, id):
         product_rating = round(float(avg_rate)/float(count),2)
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
-
-def daily_stat(request, id):
-    today = datetime.now().date()
-    start_date = datetime.min.time()
-    end_date = datetime.max.time()
-    start_range = datetime.combine(today, start_date)
-    end_range = datetime.combine(today, end_date)
-    the_daily_deal = []
-    deal = Product.objects.filter(daily_deal = 1).filter(deal_date__range=[str(start_range),str(end_range)])
-    time_count = 1
-    for deals in deal:
-        while time_count < 25:
-            counter = 0
-            holder = []
-            for purchases in Purchase.objects.filter(product_id = deals.id):
-                if purchases.created_at.strftime("%H") == str(time_count):
-                    counter += 1
-            holder.append(time_count)
-            holder.append(counter)
-            the_daily_deal.append(holder)
-            time_count += 1
-    context = {
-        'the_daily_deal':json.dumps(the_daily_deal)
-    }
-    return render(request, 'home/daily_stat.html', context)
 
 def manage_products(request):
     if 'admin_level' not in request.session:
@@ -580,3 +561,52 @@ def order(request, id):
         total =+ product["price"]
     context = {"order":order, "order_basket":order_basket, "total":total, "categories": categories, "subcategories": subcategories}
     return render(request, 'home/order.html', context)
+
+def community(request):
+    category_list = Category.objects.all()
+    context = {
+        'category_list':category_list
+    }
+    return render(request, "home/community.html", context)
+
+def daily_deals(request):
+    if not request.session["admin_level"] == 4:
+        return redirect(reverse('home:index'))
+    days = []
+    for i in range(30):
+        new_date = date.today() + timedelta(i)
+        days.append(new_date)
+    deals = Product.objects.filter(daily_deal=True)
+    deal_days = []
+    for deal in deals:
+        deal.deal_date = deal.deal_date.date()
+        print deal.deal_date
+    for day in days:
+        deal_day = {'day':day}
+        for deal in deals:
+            if deal.deal_date == day:
+                deal_day["deal"] = deal
+                print deal.name
+        deal_days.append(deal_day)
+    context = {"deal_days":deal_days, "days":days, "deals":deals}
+    return render(request, 'home/daily_deals.html', context)
+
+def remove_deal(request, id):
+    if not request.method == "POST":
+        return redirect(reverse('home:index'))
+    Product.objects.filter(id=id).update(daily_deal=False)
+    return redirect(reverse('home:daily_deals'))
+
+def change_deal(request, id):
+    if not request.method == "POST":
+        return redirect(reverse('home:index'))
+    product = Product.objects.get(id=id)
+    deal_date = datetime.strptime(request.POST["deal_date"], "%b. %d, %Y")
+    print deal_date
+    switch_product = Product.objects.filter(deal_date=deal_date)
+    if switch_product:
+        Product.objects.filter(deal_date=deal_date).update(deal_date=product.deal_date)
+
+    product.deal_date = deal_date
+    product.save()
+    return redirect(reverse('home:daily_deals'))

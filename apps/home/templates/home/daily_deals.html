@@ -13,14 +13,7 @@
     <div class="well nav-color white-text">
       <p class="h2 text-center">Admin Dashboard <p class="pull-right"><a class="light-font white-text" href="{% url 'home:index' %}">Back to woot!</a></p></p>
     </div>
-    <div class="text-center">
-      <a class="btn btn-success" href="{% url 'home:add_product' %}">New Product</a>
-      <span>&nbsp;</span>
-      <a class="btn btn-success" href="{% url 'home:manage_products' %}">Manage Products</a>
-      <span>&nbsp;</span>
-      <a class="btn btn-success" href="{% url 'home:daily_deals' %}">Daily Deals</a>
-    </div>
-    <h2>Manage Users</h2>
+    <h2>Daily Deals</h2>
     {% if messages %}
       <ul class="messages">
       {% for message in messages %}
@@ -28,30 +21,40 @@
       {% endfor %}
       </ul>
     {% endif %}
-    <a class="btn btn-success" href="{% url 'login:new' %}">Add New User</a>
     <div>&nbsp;</div>
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Created At</th>
-          <th>Admin Level</th>
+          <th>Date</th>
+          <th>Daily Deal</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        {% for user in users %}
+        {% for deal_day in deal_days %}
           <tr>
-            <td>{{user.id}}</td>
-            <td>{{user.username}}</td>
-            <td>{{user.first_name}} {{user.last_name}}</td>
-            <td>{{user.email}}</td>
-            <td>{{user.created_at}}</td>
-            <td>{% if user.admin_level == 4 %}admin{% else %}normal{% endif %}</td>
-            <td><a href="{% url 'login:edit_admin' id=user.id %}">edit</a> | <a href="{% url 'login:delete_user' id=user.id %}">remove</a></td>
+            <td>{{deal_day.day}}</td>
+            {% if deal_day.deal %}
+              <td><a href="{% url 'home:show_product' id=deal_day.deal.id %}">{{deal_day.deal.name}}</a></td>
+              <td>Change Deal Date:
+                <form class="" action="{% url 'home:change_deal' id=deal_day.deal.id %}" method="post">
+                  {% csrf_token %}
+                  <select name="deal_date">
+                    {% for deal_day in deal_days %}
+                      <option value="{{deal_day.day}}">{{deal_day.day}}</option>
+                    {% endfor %}
+                    <input class="btn btn-info" type="submit" value="Change">
+                  </select>
+                </form>
+                <form action="{% url 'home:remove_deal' id=deal_day.deal.id %}" method="post">
+                  {% csrf_token %}
+                  <input type="submit" class="btn btn-danger" value="Remove from Daily Deals">
+                </form>
+              </td>
+            {% else %}
+              <td>No Deal Selected</td>
+              <td><a href="{% url 'home:new_product' %}">Add a product for this daily deal</a> | <a href="{% url 'home:manage_products' %}">Change a product to this daily deal</a></td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>

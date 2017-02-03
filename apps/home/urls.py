@@ -27,7 +27,10 @@ urlpatterns = [
     url(r'^comment$', views.comment, name="comment"),
     url(r'^reply/(?P<id>\d+)$', views.reply, name="reply"),
     url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
-    url(r'^daily_stat/(?P<id>\d+)$', views.daily_stat, name='daily_stat'),
     url(r'^orders/$', views.orders, name='orders'),
     url(r'^order/(?P<id>\d+)/$', views.order, name='order'),
+    url(r'^community/$', views.community, name='community'),
+    url(r'^daily_deals/$', views.daily_deals, name="daily_deals"),
+    url(r'^remove_deal/(?P<id>\d+)$', views.remove_deal, name="remove_deal"),
+    url(r'^change_deal/(?P<id>\d+)$', views.change_deal, name="change_deal"),
 ]
