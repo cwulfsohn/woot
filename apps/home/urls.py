@@ -23,7 +23,9 @@ urlpatterns = [
     url(r'^subcategory/(?P<id>\d+)$', views.subcategory, name="subcategory"),
     url(r'^discussion/product/(?P<id>\d+)$', views.discussion, name="discussion"),
     url(r'^discussion/delete/(?P<id>\d+)/(?P<product_id>\d+)$', views.delete_comment, name="delete_comment"),
+    url(r'^discussion/delete/reply/(?P<id>\d+)/(?P<product_id>\d+)$', views.delete_replies, name="delete_replies"),
     url(r'^comment$', views.comment, name="comment"),
+    url(r'^reply/(?P<id>\d+)$', views.reply, name="reply"),
     url(r'^rating/(?P<id>\d+)$', views.rating, name="rating"),
     url(r'^stat/(?P<id>\d+)$', views.stat, name='stat'),
 ]

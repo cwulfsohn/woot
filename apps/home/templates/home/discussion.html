@@ -77,118 +77,140 @@
     </nav><!-- End NAVBAR -->
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
     <div class="container">
-      <div class="col-xs-12">
-        <div role="tabpanel">
-          <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class = "active">
-              <a href="#product" id = "main_product" aria-controls="product" role="tab" data-toggle="tab">{{product.name}} Discussion</a>
-            </li>
-            <li role="presentation">
-              <a href="#category" id= "other_products" aria-controls="category" role="tab" data-toggle="tab">World of {{main_category.category}}</a>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="product">
-              <div class='container-fluid'>
-                <div id="all_deals" class='page-header'>
-                  {% load static %}
-                  <a class="all_deals" href="{% url 'home:show_product' id=product.id %}"><img class="img-responsive pull-left" src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
-                  <h1>{{product.name}}</h1>
-                  <h4>{{product.description}}</h4>
-                </div>
-                <div class="col-lg-12">
-                <h2>What do you think of the product?</h2>
-                </div>
-                <form action={% url 'home:comment' %} method='post'>
+  <div role="tabpanel">
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class = "active">
+        <a href="#product" id = "main_product" aria-controls="product" role="tab" data-toggle="tab">{{product.name}} Discussion</a>
+      </li>
+      <li role="presentation">
+        <a href="#category" id= "other_products" aria-controls="category" role="tab" data-toggle="tab">World of {{main_category.category}}</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="product">
+        <div class='container-fluid'>
+          <div id="all_deals" class='page-header'>
+            {% load static %}
+            <a class="all_deals" href="{% url 'home:show_product' id=product.id %}"><img class="img-responsive pull-left" src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
+            <h1>{{product.name}}</h1>
+            <h4>{{product.description}}</h4>
+          </div>
+          <div class="col-lg-12">
+          <h2>What do you think of the product?</h2>
+          </div>
+          <form action={% url 'home:comment' %} method='post'>
+            {% csrf_token %}
+            <input type='hidden' name="product_id" value="{{product.id}}">
+            <div class="form-group">
+              <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
+            </div>
+            {% if user %}
+            <div class="form-group">
+              <input type='submit'class="btn btn-success pull-right" value='Post'>
+            </div>
+            {% else %}
+            <div class="form-group">
+              <input type='submit'class="btn btn-success pull-right" value='Sign In to Post'>
+            </div>
+            {% endif %}
+          </form>
+        </div>
+        <hr>
+      {% for comment in comments %}
+        <div class="container-fluid">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              {{comment.author.username}} at {{comment.created_at}} posted:
+            </div>
+            <div class="panel-body" style="min-height: 10rem;">
+              {{comment.content}}
+              {% if user.admin_level == 4 or user.id == comment.author.id %}
+                <form action="{% url 'home:delete_comment' id=comment.id product_id=product.id %}" method='post'>
                   {% csrf_token %}
-                  <input type='hidden' name="product_id" value="{{product.id}}">
-                  <div class="form-group">
-                    <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
-                  </div>
-                  <div class="form-group">
-                    <input type='submit'class="btn btn-success pull-right" value='Post'>
-                  </div>
+                  <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
                 </form>
-              </div>
-              <hr>
-            {% for comment in comments %}
-              <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    {{comment.author.username}} at {{comment.created_at}} posted:
-                  </div>
-                  <div class="panel-body" style="min-height: 10rem;">
-                    {{comment.content}}
-                    {% if user.admin_level == 4 or user.id == comment.author.id %}
-                      <form action="{% url 'home:delete_comment' id=comment.id product_id=product.id %}" method='post'>
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
-                      </form>
-                    {% endif %}
-                  <a href="#reply" id={{comment.id}} class="btn btn-info pull-right">Reply</a>
-                  <form action={% url 'home:comment' %} class="{{comment.id}} hidden" method="post">
-                    {% csrf_token %}
-                    <input type='hidden' name="product_id" value="{{product.id}}">
-                    <label name="comment">Reply to Comment</label>
-                    <textarea name="comment" class="form-control" rows=5>""" {{comment.author.username}} wrote: {{comment.content}} """ -</textarea>
-                    <input type="submit" class="btn btn-success pull-right" value="Post">
-                  </form>
-                  </div>
-                </div>
+              {% endif %}
+            <a href="#reply" id={{comment.id}} class="btn btn-info pull-right">Reply</a>
+            <form action="{% url 'home:reply' id=comment.id %}" class="{{comment.id}} hidden" method="post">
+              {% csrf_token %}
+              <input type='hidden' name="product_id" value="{{product.id}}">
+              <label name="comment">Reply to Comment</label>
+              <textarea name="comment" class="form-control" rows=5></textarea>
+              <input type="submit" class="btn btn-success pull-right" value="Post">
+            </form>
             </div>
-          {% endfor %}
-            </div>
-            <div role="tabpane2" class="tab-pane" id="category">
-              {% for product_category in category %}
-                <h1>{{product_category.category}}</h1>
-                <hr>
-                {% for subcategory in product_category.subcategories.all %}
-                  {% for product in subcategory.products.all %}
-                  {% load static %}
-                  <div class="media product_list">
-                    <div class="media-left media-middle">
-                      <a class="media-object discussion_all_deals" href="{% url 'home:show_product' id=product.id %}"><img src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
-                    </div>
-                    <div class="media-body">
-                      <a class="media-heading" href="{% url 'home:discussion' id=product.id %}"><h2>{{product.name}}</h2></a>
-                    </div>
-                    </div>
-                  {% endfor %}
-                {% endfor %}
-              {% endfor %}
-            </div>
+          </div>
+      </div>
+      {% for replies in comment.comment_reply.all|dictsortreversed:"created_at" %}
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{replies.user.username}} at {{replies.created_at}} Replied to {{comment.author.username}}:
+          </div>
+          <div class="panel-body" style="min-height: 10rem;">
+            <p>{{replies.content}}</p>
+            {% if user.admin_level == 4 or user.id == replies.user.id %}
+              <form action="{% url 'home:delete_replies' id=replies.id product_id=product.id %}" method='post'>
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
+              </form>
+            {% endif %}
           </div>
         </div>
       </div>
-    </div>
-    <div class="container">
-      {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-          <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+      {% endfor %}
+    {% endfor %}
+      </div>
+      <div role="tabpane2" class="tab-pane" id="category">
+        {% for product_category in category %}
+          <h1>{{product_category.category}}</h1>
+          <hr>
+          {% for subcategory in product_category.subcategories.all %}
+            {% for product in subcategory.products.all %}
+            {% load static %}
+            <div class="media product_list">
+              <div class="media-left media-middle">
+                <a class="media-object discussion_all_deals" href="{% url 'home:show_product' id=product.id %}"><img src="{% static product.primary_image %}" alt="{{product.primary_image}}"></a>
+              </div>
+              <div class="media-body">
+                <a class="media-heading" href="{% url 'home:discussion' id=product.id %}"><h2>{{product.name}}</h2></a>
+              </div>
+              </div>
+            {% endfor %}
+          {% endfor %}
         {% endfor %}
-        </ul>
-      {% endif %}
+      </div>
     </div>
-    <script>
-      $(document).ready(function(){
-        $('#main_product').tab('show')
-      })
-      $('#main_product').click(function () {
-        $('#other_product').hide()
-        $(this).tab('show')
-      })
-      $('#other_product').click(function () {
-        $('#product').hide()
-        $(this).tab('show')
-      })
-      $('.panel-body > a').click(function (e) {
-        e.preventDefault()
-        var id = "."
-        var attribute = $(this).attr('id');
-        id += attribute;
-        $(id).toggleClass('hidden');
-      })
-    </script>
-  </body>
+  </div>
+</div>
+<div class="container">
+  {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+      <li {% if message.tags %} class="{{message.tags}}"{% endif %}>{{message}}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+<script>
+  $(document).ready(function(){
+    $('#main_product').tab('show')
+  })
+  $('#main_product').click(function () {
+    $('#other_product').hide()
+    $(this).tab('show')
+  })
+  $('#other_product').click(function () {
+    $('#product').hide()
+    $(this).tab('show')
+  })
+  $('.panel-body > a').click(function (e) {
+    e.preventDefault()
+    var id = "."
+    var attribute = $(this).attr('id');
+    id += attribute;
+    $(id).toggleClass('hidden');
+  })
+</script>
+</body>
 </html>

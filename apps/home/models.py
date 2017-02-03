@@ -78,9 +78,13 @@ class CommentManager(models.Manager):
         print product.id
         Comment.objects.create(content = comment, author = user, product = product)
 
-class LikeManager(models.Manager):
-    def home(self):
-        pass
+class ReplyManager(models.Manager):
+    def AddReply(self, reply, product_id, user_id, comment_id):
+        user = User.objects.get(id = user_id)
+        product = Product.objects.get(id = product_id)
+        user_comment = Comment.objects.get(id = comment_id)
+        Replies.objects.create(content = reply, user = user, comment=user_comment)
+
 
 class Category(models.Model):
     category = models.CharField(max_length=150, unique=True)
@@ -176,14 +180,14 @@ class Comment(models.Model):
 
     objects = CommentManager()
 
-class Like(models.Model):
-    like = models.BooleanField(default=False)
+class Replies(models.Model):
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, related_name="user_likes")
-    comment = models.ForeignKey(Comment, related_name="comment_likes")
+    user = models.ForeignKey(User, related_name="user_reply")
+    comment = models.ForeignKey(Comment, related_name="comment_reply")
 
-    objects = LikeManager()
+    objects = ReplyManager()
 
 class Rating(models.Model):
     rating = models.IntegerField()
