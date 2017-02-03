@@ -29,7 +29,7 @@
         <div class="navbar-collapse bottom-border" id="navbar">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a class="underline lighter-font" href="#">Community</a>
+              <a class="underline lighter-font" href="{% url 'home:community' %}">Community</a>
             </li>
             {% if request.session.username %}
             <li class="dropdown">
@@ -72,7 +72,7 @@
             </li>
             {% endfor %}
             <li class="dropdown">
-              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span>{% if not request.session.cart %}<span class="badge">0</span>{% else %}<span class="badge">{{request.session.cart}}</span>{% endif %}</a>
               <ul class="dropdown-menu collapse nav-color">
                 <li><a href="{% url 'checkout:buy' %}"><button class="btn-lg btn-warning">Proceed to Checkout</button></a></li>
                 <li><a class="text-center white-text" href="{% url 'checkout:index' %}">View your cart</a></li>

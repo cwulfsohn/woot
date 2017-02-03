@@ -563,9 +563,13 @@ def order(request, id):
     return render(request, 'home/order.html', context)
 
 def community(request):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     category_list = Category.objects.all()
     context = {
-        'category_list':category_list
+        'category_list':category_list,
+        "categories": categories,
+        "subcategories": subcategories
     }
     return render(request, "home/community.html", context)
 
