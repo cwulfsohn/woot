@@ -74,7 +74,7 @@
             </li>
             {% endfor %}
             <li class="dropdown">
-              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span>{% if not request.session.cart %}<span class="badge">0</span>{% else %}<span class="badge">{{request.session.cart}}</span>{% endif %}</a>
               <ul class="dropdown-menu collapse nav-color">
                 <li><a href="{% url 'checkout:buy' %}"><button class="btn-lg btn-warning">Proceed to Checkout</button></a></li>
                 <li><a class="text-center white-text" href="{% url 'checkout:index' %}">View your cart</a></li>
@@ -96,7 +96,12 @@
           <p>&nbsp;</p>
           <h3 class="name-font">{{ daily_deal.name }}</h3>
           <p class="name-font h2">${{ daily_deal.price|floatformat:2 }}  <p class="gray_font"><span class="strikethrough">${{ daily_deal.list_price|floatformat:2  }}</span>  {{ percent_off|floatformat:2 }}% off List Price </p></p>
+          {% if daily_deal.quantity > 0 %}
           <a href="/product/show/{{ daily_deal.id }}"><img src="{% static 'home/images/wantone.png' %}" alt="I want one"></a>
+          {% else %}
+          <span class="btn btn-lg btn-danger">Sold Out!</span>
+          <h5>Today's deal has sold out. Come back tomorrow for another great deal!</h5>
+          {% endif %}
           <p>&nbsp;</p>
           <div id="deal-description" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <hr>
@@ -134,8 +139,8 @@
              labels: {
                  rotation: -45,
                  style: {
-                     fontSize: '13px',
-                     fontFamily: 'Verdana, sans-serif'
+                     fontSize: '12px',
+                     fontFamily: 'Helvetica, Arial, sans-serif'
                  }
              }
          },
@@ -162,8 +167,8 @@
                  format: '{point.y}',
                  y: 10, // 10 pixels down from the top
                  style: {
-                     fontSize: '13px',
-                     fontFamily: 'Verdana, sans-serif'
+                     fontSize: '12px',
+                     fontFamily: 'Helvetica, Arial, sans-serif'
                  }
              }
          }]
@@ -188,7 +193,7 @@
         </a>
         {% endfor %}
       <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
-      <h4>Newest Items</h4>
+      <h4>Newest Items:</h4>
       <hr>
       {% for product in new_items %}
         <a href="/product/show/{{ product.id }}">
@@ -204,7 +209,7 @@
         </a>
         {% endfor %}
       <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
-      <h4>Last Chance</h4>
+      <h4>Last Chance:</h4>
       <hr>
       {% for product in last_chance %}
         <a href="/product/show/{{ product.id }}">

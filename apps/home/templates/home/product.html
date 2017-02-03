@@ -119,11 +119,12 @@
               {% if active %}
               <input class="btn-lg btn-warning" type="submit" value="Add To Cart">
               {% else %}
-              <button class="btn-lg btn-danger disabled">Sold Out!</button>
+              <span class="btn btn-lg btn-danger">Sold Out!</span>
               {% endif %}
             </form>
             <hr>
             {% if not rated %}
+            {% if 'id' in request.session %}
             <h5>Rate This Product</h5>
             <form action="{% url 'home:rating' id=product.id %}" method="post">
               {% csrf_token %}
@@ -136,6 +137,7 @@
               </select> Stars
               <input type="submit" value="Rate!">
             </form>
+            {% endif %}
             {% endif %}
             {% if avg_rating %}
             <h5>Average Rating: {{avg_rating}} Stars</h5>
@@ -191,8 +193,8 @@
                 {% endif %}
               </div>
               <div role="tabpanel" class="tab-pane" id="statistics">
-                <div id="chart_container" style="width:560px; height:400px;"></div>
-                <div id="container" style="width:560px; height:400px;"></div>
+                <div id="chart_container" class="img-responsive" style="margin: 0 auto"></div>
+                <div id="container" class="img-responsive"></div>
                 <script>
                 var daily_product = {{daily_deal| safe}}
                   $(function () {
@@ -208,8 +210,8 @@
                        labels: {
                            rotation: -45,
                            style: {
-                               fontSize: '13px',
-                               fontFamily: 'Verdana, sans-serif'
+                               fontSize: '12px',
+                               fontFamily: 'Helvetica, Arial, sans-serif'
                            }
                        }
                    },
@@ -236,8 +238,8 @@
                            format: '{point.y}',
                            y: 10, // 10 pixels down from the top
                            style: {
-                               fontSize: '13px',
-                               fontFamily: 'Verdana, sans-serif'
+                               fontSize: '12px',
+                               fontFamily: 'Helvetica, Arial, sans-serif'
                            }
                        }
                    }]

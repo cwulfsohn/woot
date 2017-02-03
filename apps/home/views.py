@@ -249,8 +249,11 @@ def show_product(request, id):
             count += 1
         holder = []
         holder.append(category_products.name)
-        holder.append(float(float(count)/float(category_count)))
-        product_percent.append(holder)
+        try:
+            holder.append(float(float(count)/float(category_count)))
+            product_percent.append(holder)
+        except:
+            pass
     show_item = 0
     for purchases in Purchase.objects.filter(product_id = product_id.id):
         show_item += 1
