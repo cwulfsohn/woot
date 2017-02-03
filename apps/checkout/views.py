@@ -206,11 +206,11 @@ def purchase(request):
     messages.add_message(request, messages.INFO, card_message)
     del request.session["address_id"]
     del request.session["card_id"]
-    del request.session["cart"]
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
     user = User.objects.get(id=request.session["id"])
     order = Order.objects.create(user=user)
+    request.session["cart"] = 0
     for cart_product in cart_products:
         product = Product.objects.get(id=cart_product['id'])
         for quantity in range(cart_product['quantity']):

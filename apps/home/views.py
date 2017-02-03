@@ -23,6 +23,7 @@ def get_cart_products(request):
         cart_products.append(cart_product)
     return cart_products
 
+
 # Create your views here.
 def index(request):
     if 'id' not in request.session:
@@ -490,3 +491,47 @@ def delete_product(request, id):
     message = "Product Successfully Deleted!"
     messages.success(request, message)
     return redirect('home:manage_products')
+
+def orders(request):
+    if not "id" in request.session:
+        return redirect(reverse('home:index'))
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    user = request.session["id"]
+    orders = Order.objects.filter(user=user).order_by("-created_at")
+    order_totals = {}
+    for order in orders:
+        total = 0
+        purchases = Purchase.objects.filter(order=order)
+        for purchase in purchases:
+            total += purchase.product.price
+        order_totals[order.id] = total
+    context = {"orders":orders, "categories":categories, "subcategories":subcategories, "order_totals":order_totals}
+    return render(request, 'home/orders.html', context)
+
+def get_order_basket(request, id):
+    user = User.objects.get(id=request.session["id"])
+    order = Order.objects.get(id=id)
+    order_basket = []
+    products = Product.objects.filter(product_purchase__order=order).distinct()
+    quantities = Order.objects.filter(id=order.id).values('order_purchases__product__name').order_by().annotate(Count('order_purchases__product__name'))
+    for product in products:
+        order_product= {"id":product.id, "name":product.name, "primary_image":product.primary_image}
+        for quantity in quantities:
+            if quantity["order_purchases__product__name"] == product.name:
+                order_product["quantity"] = quantity["order_purchases__product__name__count"]
+        order_product["price"] = order_product["quantity"] * product.price
+        order_basket.append(order_product)
+    return order_basket
+
+def order(request, id):
+    user = User.objects.get(id=request.session["id"])
+    order = Order.objects.get(id=id)
+    if not order.user == user:
+        return redirect(reverse('home:index'))
+    order_basket = get_order_basket(request, id)
+    total = 0
+    for product in order_basket:
+        total =+ product["price"]
+    context = {"order":order, "order_basket":order_basket, "total":total}
+    return render(request, 'home/order.html', context)
