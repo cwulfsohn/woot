@@ -124,8 +124,10 @@ def category(request, id):
     this_cat_subcategories = Subcategory.objects.filter(category = category)
     ending_soon = Product.objects.filter(subcategory__category=category, active = True, quantity__gt=0).order_by('expire_date')[:4]
     total_products = {}
+    category_total = 0
     for cat in this_cat_subcategories:
         total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
+        category_total += total_products[cat.id]
     if ending_soon:
         main_product = ending_soon[0]
         images = Image.objects.filter(product=main_product)
@@ -148,6 +150,7 @@ def category(request, id):
                'percent_off': percent_off,
                'all_products': all_products,
                'total_products': total_products,
+               'category_total': category_total,
                }
     return render(request, 'home/category.html', context)
 
@@ -158,8 +161,10 @@ def subcategory(request, id):
     category = Category.objects.get(id = subcategory.category_id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
     total_products = {}
+    category_total = 0
     for cat in this_cat_subcategories:
         total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
+        category_total += total_products[cat.id]
     all_products = Product.objects.filter(subcategory = subcategory, active = True, quantity__gt=0).order_by('expire_date')
     context = {'categories': categories,
                'subcategories': subcategories,
@@ -168,6 +173,7 @@ def subcategory(request, id):
                'this_cat_subcategories': this_cat_subcategories,
                'all_products': all_products,
                'total_products': total_products,
+               'category_total': category_total,
                }
     return render(request, 'home/subcategory.html', context)
 

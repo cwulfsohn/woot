@@ -74,7 +74,8 @@
             <li class="dropdown">
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-md btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>
@@ -114,9 +115,9 @@
               {% endif %}
               <p>Shipping: <strong>Standard</strong></p>
               {% if active %}
-              <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
+              <input class="btn-lg btn-warning" type="submit" value="Add To Cart">
               {% else %}
-              <span class=" btn btn-lg btn-danger">Sold Out!</span>
+              <button class="btn-lg btn-danger disabled">Sold Out!</button>
               {% endif %}
             </form>
             <hr>
@@ -147,7 +148,7 @@
             {% if not comments %}
             <p>No posts yet? WHAT? Somebody help fix that by saying something cool.</p>
             {% endif %}
-            <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success bottom-border">join the discussion</button></a>
+            <a href="/discussion/product/{{ product.id }}"><button class="btn-lg btn-success">join the discussion</button></a>
             <hr>
             <h5>Description:</h5>
             <p>{{ product.description }}</p>
