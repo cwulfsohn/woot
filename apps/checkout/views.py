@@ -230,7 +230,7 @@ def success(request):
     products = Product.objects.filter(product_purchase__order=order)
     saved = 0
     total = 0
-    other_products = Product.objects.filter(subcategory=products[0].subcategory).exclude(id=products[0].id).exclude(active=False)[:6]
+    other_products = Product.objects.filter(subcategory__category=products[0].subcategory.category).exclude(id=products[0].id).exclude(active=False)[:6]
     for product in products:
         saved += product.list_price - product.price
         total += product.price
