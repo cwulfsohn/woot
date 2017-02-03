@@ -120,7 +120,7 @@
         </div>
       </div>
       <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
-      <div id="chart_container" style="width:100%; height:400px;"></div>
+      <div id="chart_container" style="width:100%; height:400px;">
       <script type="text/javascript">
       var daily_product = {{the_daily_deal| safe}}
         $(function () {
@@ -175,18 +175,20 @@
      });
   });
       </script>
+      </div>
+      <div class="col-xs-12">
       <hr>
       <h4 class="text-center">Other Featured Items</h4>
       <h4>Bestsellers:</h4>
       <hr>
       {% for product in bestsellers %}
         <a href="/product/show/{{ product.id }}">
-          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 panel panel-success text-center all_deals no-padding">
               <div class="panel-body">
                 <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
               </div>
               <div class="panel-footer">
-                <p class="name-font small_titles">{{ product.name }}</p>
+                <h4 class="name-font">{{ product.name }}</h4>
                 <h5 class="name-font">${{ product.price|floatformat:2 }}</h5>
               </div>
           </div>
@@ -197,12 +199,12 @@
       <hr>
       {% for product in new_items %}
         <a href="/product/show/{{ product.id }}">
-          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 panel panel-success text-center all_deals no-padding">
               <div class="panel-body">
                 <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
               </div>
               <div class="panel-footer">
-                <p class="name-font small_titles">{{ product.name }}</p>
+                <h4 class="name-font">{{ product.name }}</h4>
                 <h5 class="name-font">${{ product.price|floatformat:2 }}</h5>
               </div>
           </div>
@@ -213,7 +215,7 @@
       <hr>
       {% for product in last_chance %}
         <a href="/product/show/{{ product.id }}">
-          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 panel panel-success text-center all_deals no-padding">
               <div class="panel-body">
                 <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
               </div>

@@ -74,7 +74,16 @@
 
 }
 
+@media (min-width: 768px) {
+  .navbar-nav>li>a {
+    padding: 10px 0px
+  }
+}
+
 @media (max-width: 991px) {
+  .custom-collapse .collapse{
+              display:block;
+        }
     .navbar-header {
         float: none;
     }
@@ -112,6 +121,7 @@
 
 .name-font {
   font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;
+  color: #333;
 }
 
 .gray_font {
@@ -179,7 +189,7 @@ form > span {
 
 .all_deals > .panel-footer{
   height: 85px;
-  padding: 5px
+  padding: 5px;
 }
 
 .all_deals > img {
