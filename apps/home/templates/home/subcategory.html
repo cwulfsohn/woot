@@ -91,9 +91,9 @@
           <li class="list-group-item-heading"><a href="{% url 'home:category' id=category.id %}"></a>All (number here)</li>
           {% for subcat in this_cat_subcategories %}
           {% if subcat.id == subcategory.id %}
-          <li class="list-group-item-heading h5">&nbsp;&nbsp;<strong>{{ subcat.subcategory }} ({{ subcat.products.count }})</strong></a></li>
+          <li class="list-group-item-heading h5">&nbsp;&nbsp;<strong>{{ subcat.subcategory }} ({% for id, count in total_products.items %}{% if id == subcat.id %}{{ count }}{% endif %}{% endfor %})</strong></a></li>
           {% else %}
-          <li class="list-group-item-heading">&nbsp;&nbsp;<a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({{ subcat.products.count }})</a></li>
+          <li class="list-group-item-heading">&nbsp;&nbsp;<a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({% for id, count in total_products.items %}{% if id == subcat.id %}{{ count }}{% endif %}{% endfor %})</a></li>
           {% endif %}
           {% endfor %}
         </ul>

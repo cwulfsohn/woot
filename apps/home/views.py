@@ -33,7 +33,7 @@ def index(request):
     try:
         daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
     except:
-        daily_deal = Product.objects.filter(daily_deal=True).order_by('expire_date')[:1]
+        daily_deal = Product.objects.filter(daily_deal=True, active = True, quantity__gt=0).order_by('expire_date')[:1]
         daily_deal = daily_deal[0]
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
@@ -116,20 +116,22 @@ def category(request, id):
     subcategories = Subcategory.objects.all()
     category = Category.objects.get(id = id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
-    ending_soon = Product.objects.filter(subcategory__category=category).filter(active=True).order_by('expire_date')[:4]
+    ending_soon = Product.objects.filter(subcategory__category=category, active = True, quantity__gt=0).order_by('expire_date')[:4]
+    total_products = {}
+    for cat in this_cat_subcategories:
+        total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
     if ending_soon:
         main_product = ending_soon[0]
         images = Image.objects.filter(product=main_product)
         comments = Comment.objects.filter(product = main_product).order_by('-created_at')[:1]
         percent_off = Product.objects.percent_off(main_product.price, main_product.list_price)
-        all_products = Product.objects.filter(subcategory__category=category).filter(active=True).exclude(id = main_product.id).order_by('expire_date')
+        all_products = Product.objects.filter(subcategory__category=category, active = True, quantity__gt=0).exclude(id = main_product.id).order_by('expire_date')
     else:
         all_products = Product.objects.filter(subcategory__category=category).filter(active=True).order_by('expire_date')
         main_product = False
         images = False
         comments = False
         percent_off = False
-    all_images = {}
     context = {'categories': categories,
                'subcategories': subcategories,
                'this_category': category,
@@ -139,7 +141,7 @@ def category(request, id):
                'comments': comments,
                'percent_off': percent_off,
                'all_products': all_products,
-               'all_images': all_images,
+               'total_products': total_products,
                }
     return render(request, 'home/category.html', context)
 
@@ -149,13 +151,17 @@ def subcategory(request, id):
     subcategory = Subcategory.objects.get(id = id)
     category = Category.objects.get(id = subcategory.category_id)
     this_cat_subcategories = Subcategory.objects.filter(category = category)
-    all_products = Product.objects.filter(subcategory = subcategory).filter(active=True).order_by('expire_date')
+    total_products = {}
+    for cat in this_cat_subcategories:
+        total_products[cat.id]= Product.objects.filter(subcategory = cat, active = True, quantity__gt = 0).count()
+    all_products = Product.objects.filter(subcategory = subcategory, active = True, quantity__gt=0).order_by('expire_date')
     context = {'categories': categories,
                'subcategories': subcategories,
                'category': category,
                'subcategory': subcategory,
                'this_cat_subcategories': this_cat_subcategories,
                'all_products': all_products,
+               'total_products': total_products,
                }
     return render(request, 'home/subcategory.html', context)
 
