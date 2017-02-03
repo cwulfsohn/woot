@@ -131,6 +131,7 @@
                   <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
                 </form>
               {% endif %}
+              {% if user.id %}
             <a href="#reply" id={{comment.id}} class="btn btn-info pull-right">Reply</a>
             <form action="{% url 'home:reply' id=comment.id %}" class="{{comment.id}} hidden" method="post">
               {% csrf_token %}
@@ -139,6 +140,7 @@
               <textarea name="comment" class="form-control" rows=5></textarea>
               <input type="submit" class="btn btn-success pull-right" value="Post">
             </form>
+            {% endif %}
             </div>
           </div>
       </div>

@@ -384,6 +384,8 @@ def discussion(request, id):
     return render(request, 'home/discussion.html', context)
 
 def comment(request):
+    if 'id' not in request.session:
+        return redirect(reverse('login:index'))
     if request.method == 'POST':
         comment = request.POST['comment']
         product_id = request.POST['product_id']
@@ -431,31 +433,6 @@ def rating(request, id):
         product_rating = round(float(avg_rate)/float(count),2)
         Product.objects.filter(id=id).update(rating = product_rating)
     return redirect(reverse('home:show_product', kwargs={'id':id}))
-
-def daily_stat(request, id):
-    today = datetime.now().date()
-    start_date = datetime.min.time()
-    end_date = datetime.max.time()
-    start_range = datetime.combine(today, start_date)
-    end_range = datetime.combine(today, end_date)
-    the_daily_deal = []
-    deal = Product.objects.filter(daily_deal = 1).filter(deal_date__range=[str(start_range),str(end_range)])
-    time_count = 1
-    for deals in deal:
-        while time_count < 25:
-            counter = 0
-            holder = []
-            for purchases in Purchase.objects.filter(product_id = deals.id):
-                if purchases.created_at.strftime("%H") == str(time_count):
-                    counter += 1
-            holder.append(time_count)
-            holder.append(counter)
-            the_daily_deal.append(holder)
-            time_count += 1
-    context = {
-        'the_daily_deal':json.dumps(the_daily_deal)
-    }
-    return render(request, 'home/daily_stat.html', context)
 
 def manage_products(request):
     if 'admin_level' not in request.session:
@@ -577,3 +554,10 @@ def order(request, id):
         total =+ product["price"]
     context = {"order":order, "order_basket":order_basket, "total":total, "categories": categories, "subcategories": subcategories}
     return render(request, 'home/order.html', context)
+
+def community(request):
+    category_list = Category.objects.all()
+    context = {
+        'category_list':category_list
+    }
+    return render(request, "home/community.html", context)

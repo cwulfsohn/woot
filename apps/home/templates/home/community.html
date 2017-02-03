@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Community</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="{% static 'home/css/styles.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    $( function() {
+      $( "#header" ).accordion({heightStyle: 'content'});
+    } );
+    </script>
+  </head>
+  <body>
+    <nav id="main-nav" class="nav-color navbar navbar-default white-text navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div id="nav-header" class="navbar-header">
+          <button id="collapse-nav" type="button" class="navbar-toggle collapsed " data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand lighter-font white-text" href="{% url 'home:index' %}"><span class="white-text h1">fööt!</span> Deals & Shenanigans</a>
+        </div>
+        <div class="navbar-collapse bottom-border" id="navbar">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a class="underline lighter-font" href="#">Community</a>
+            </li>
+            {% if request.session.username %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
+              <ul class="dropdown-menu nav-color">
+                <li><a class="white-text" href="{% url 'login:edit' %}">Edit Your Account</a></li>
+                <li class="divider"></li>
+                <li><a class="white-text" href="{% url 'home:orders' %}">Stuff You've Bought</a></li>
+                <li class="divider"></li>
+                {% if request.session.admin_level == 4 %}
+                <li><a class="white-text" href="{% url 'login:dashboard' %}">Admin Dashboard</a></li>
+                <li class="divider"></li>
+                {% endif %}
+                <li><a class="white-text" href="{% url 'login:logout' %}">Sign Out</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            {% if not request.session.username %}
+            <li>
+              <a href="{% url 'login:index' %}">Sign In</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        <div id="categories" class="collapse navbar-collapse collapse-buttons .custom-collapse">
+          <ul class="nav navbar-nav">
+            {% for category in categories %}
+            <li class="dropdown">
+              <a href="{% url 'home:category' id=category.id %}" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> {{ category.category }} <span class="caret"></span></a>
+              <ul class="dropdown-menu collapse nav-color">
+                <li><a class="white-text" href="{% url 'home:category' id=category.id %}">See all {{ category.category }} deals</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header white-text">Subcategories</li>
+                {% for subcat in subcategories %}
+                  {% if subcat.category.id == category.id%}
+                    <li><a class="white-text" href="{% url 'home:subcategory' id=subcat.id %}"> {{subcat.subcategory}}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+            {% endfor %}
+            <li class="dropdown">
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
+              <ul class="dropdown-menu collapse nav-color">
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn-lg btn-warning">Proceed to Checkout</button></a></li>
+                <li><a class="text-center white-text" href="{% url 'checkout:index' %}">View your cart</a></li>
+              </ul>
+            </li>
+        </div>
+      </div>
+    </nav><!-- End NAVBAR -->
+    <h1>Community</h1>
+    <div id="header">
+    {% for category in category_list %}
+      <h1>{{category.category}}</h1>
+      <div style="{max-height: 200px; overflow-y: scroll; max-height:200px;}">
+      {% for subcategory in category.subcategories.all %}
+        {% for products in subcategory.products.all %}
+        {% load staticfiles %}
+        <div class="media product_list">
+          <div class="media-left media-middle">
+            <a class="media-object discussion_all_deals" href="{% url 'home:show_product' id=products.id %}"><img class="small_images" src="{% static products.primary_image %}" alt="{{products.primary_image}}"></a>
+          </div>
+          <div class="media-body">
+            <a class="media-heading" href="{% url 'home:discussion' id=products.id %}"><h2>{{products.name}}</h2></a>
+          </div>
+          </div>
+        {% endfor %}
+      {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+  </body>
+</html>
