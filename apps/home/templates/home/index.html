@@ -35,7 +35,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url 'login:edit' %}">Your Account</a></li>
+                <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
@@ -72,11 +72,9 @@
             </li>
             {% endfor %}
             <li class="dropdown">
-              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="#">{{ items }}</a></li>
-                <li><a href="#"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="#">View your cart</a></li>
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
               </ul>
             </li>
         </div>
@@ -85,7 +83,7 @@
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
     <div class="container">
       <div id="daily_deal">
-        <h3 class="text-center col-xs-12">Deal of the day for today, {{ today }}:</h3>
+        <h3 class="text-center text-success col-xs-12">Deal of the day for today, {{ today }}</h3>
         <div id="deal-pic" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
           <p>&nbsp;</p>
           {% load static %}
@@ -112,6 +110,57 @@
             </div>
           </div>
         </div>
+      </div>
+      <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
+      <hr>
+      <h4 class="text-center">Other Featured Items</h4>
+      <h4>Bestsellers:</h4>
+      <hr>
+      {% for product in bestsellers %}
+        <a href="/product/show/{{ product.id }}">
+          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+              <div class="panel-body">
+                <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
+              </div>
+              <div class="panel-footer">
+                <h4 class="name-font">{{ product.name }}</h4>
+                <h5 class="name-font">${{ product.price|floatformat:2 }}</h5>
+              </div>
+          </div>
+        </a>
+        {% endfor %}
+      <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
+      <h4>Newest Items</h4>
+      <hr>
+      {% for product in new_items %}
+        <a href="/product/show/{{ product.id }}">
+          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+              <div class="panel-body">
+                <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
+              </div>
+              <div class="panel-footer">
+                <h4 class="name-font">{{ product.name }}</h4>
+                <h5 class="name-font">${{ product.price|floatformat:2 }}</h5>
+              </div>
+          </div>
+        </a>
+        {% endfor %}
+      <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
+      <h4>Last Chance</h4>
+      <hr>
+      {% for product in last_chance %}
+        <a href="/product/show/{{ product.id }}">
+          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 panel panel-success text-center all_deals no-padding">
+              <div class="panel-body">
+                <img class="img-responsive text-center small_images" src="{% static product.primary_image %}" alt="{{ product.name }}">
+              </div>
+              <div class="panel-footer">
+                <h4 class="name-font">{{ product.name }}</h4>
+                <h5 class="name-font">${{ product.price|floatformat:2 }}</h5>
+              </div>
+          </div>
+        </a>
+        {% endfor %}
       </div>
     </div> <!-- /container -->
     <!-- Bootstrap core JavaScript

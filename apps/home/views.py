@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.contrib import messages
 from django.db.models import Count
 from django.db.models import Avg
 import json
+import decimal
 
 def get_cart_products(request):
     user = User.objects.get(id=request.session["id"])
@@ -38,6 +39,9 @@ def index(request):
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
+    bestsellers = Product.objects.annotate(sold=Count('product_purchase__product_id')).exclude(id = daily_deal.id).order_by('-sold')[:4]
+    new_items = Product.objects.exclude(id= daily_deal.id).order_by('-created_at')[:4]
+    last_chance = Product.objects.exclude(id = daily_deal.id).filter(quantity__gt=0).order_by('quantity')[:4]
     context = {'categories': categories,
                'subcategories': subcategories,
                'daily_deal': daily_deal,
@@ -45,6 +49,9 @@ def index(request):
                'percent_off': percent_off,
                'comments': comments,
                'today': today,
+               'bestsellers': bestsellers,
+               'new_items': new_items,
+               'last_chance': last_chance,
                }
     return render(request, 'home/index.html', context)
 
@@ -166,18 +173,21 @@ def subcategory(request, id):
     return render(request, 'home/subcategory.html', context)
 
 def show_product(request, id):
-    # try:
-    cart_products = get_cart_products(request)
+    try:
+        cart_products = get_cart_products(request)
+    except KeyError:
+        cart_products = False
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     if product.active == False:
         return redirect(reverse('home:index'))
     over = False
-    for cart_product in cart_products:
-        if cart_product["id"] == int(id):
-            if cart_product["quantity"] >= product.quantity:
-                over = True
+    if cart_products:
+        for cart_product in cart_products:
+            if cart_product["id"] == int(id):
+                if cart_product["quantity"] >= product.quantity:
+                    over = True
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
@@ -193,6 +203,10 @@ def show_product(request, id):
         avg_rating = round(avg_rating, 1)
     except:
         pass
+    stats = stat(id)
+    for key,value in stats.items():
+        print key
+        print value
     context = {'categories': categories,
                'subcategories': subcategories,
                'product': product,
@@ -283,12 +297,19 @@ def delete_specification(request, id, spec_id):
     return redirect(reverse('home:specifications', kwargs={'id':id}))
 
 def discussion(request, id):
-    user = User.objects.get(id = request.session["id"])
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    try:
+        user = User.objects.get(id = request.session["id"])
+    except:
+        user = False
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("-created_at")
     category = Category.objects.filter(subcategories__products__id = id)
     main_category = Category.objects.get(subcategories__products__id = id)
     context = {
+        'categories': categories,
+        'subcategories': subcategories,
         'user':user,
         'product':product,
         'comments':comments,
@@ -367,7 +388,6 @@ def stat(request, id):
         holder.append(category_products.name)
         holder.append(float(float(count)/float(category_count)))
         product_percent.append(holder)
-        print product_percent
     show_item = 0
     for purchases in Purchase.objects.filter(product_id = product_id.id):
         show_item += 1
@@ -390,6 +410,31 @@ def stat(request, id):
         'product_percent':json.dumps(product_percent)
     }
     return render(request, 'home/stat_test.html', context)
+
+def daily_stat(request, id):
+    today = datetime.now().date()
+    start_date = datetime.min.time()
+    end_date = datetime.max.time()
+    start_range = datetime.combine(today, start_date)
+    end_range = datetime.combine(today, end_date)
+    the_daily_deal = []
+    deal = Product.objects.filter(daily_deal = 1).filter(deal_date__range=[str(start_range),str(end_range)])
+    time_count = 1
+    for deals in deal:
+        while time_count < 25:
+            counter = 0
+            holder = []
+            for purchases in Purchase.objects.filter(product_id = deals.id):
+                if purchases.created_at.strftime("%H") == str(time_count):
+                    counter += 1
+            holder.append(time_count)
+            holder.append(counter)
+            the_daily_deal.append(holder)
+            time_count += 1
+    context = {
+        'the_daily_deal':json.dumps(the_daily_deal)
+    }
+    return render(request, 'home/daily_stat.html', context)
 
 def manage_products(request):
     if 'admin_level' not in request.session:

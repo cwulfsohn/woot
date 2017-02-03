@@ -35,7 +35,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url 'login:edit' %}">Your Account</a></li>
+                <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
@@ -74,16 +74,19 @@
             <li class="dropdown">
               <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="#">{{ request.session.cart }}</a></li>
                 <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="{% url 'checkout:index' %}">View your cart</a></li>
               </ul>
             </li>
         </div>
       </div>
     </nav><!-- End NAVBAR -->
     <div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
-    <div class="container" class="col-xs-12">
+    <div class="container">
+      {% if messages %}
+        {% for message in messages %}
+          <p class="text-danger">{{message}}</p>
+        {% endfor %}
+      {% endif %}
       <div id="product_area">
         <div id="deal-buy" class="col-xs-12">
           <h3 class="name-font col-xs-12 col-md-4 row">{{ product.name }}</h3>
