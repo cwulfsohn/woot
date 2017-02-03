@@ -61,16 +61,34 @@
                     </form>
                   {% endif %}
                 <a href="#reply" id={{comment.id}} class="btn btn-info pull-right">Reply</a>
-                <form action={% url 'home:comment' %} class="{{comment.id}} hidden" method="post">
+                <form action="{% url 'home:reply' id=comment.id %}" class="{{comment.id}} hidden" method="post">
                   {% csrf_token %}
                   <input type='hidden' name="product_id" value="{{product.id}}">
                   <label name="comment">Reply to Comment</label>
-                  <textarea name="comment" class="form-control" rows=5>""" {{comment.author.username}} wrote: {{comment.content}} """ -</textarea>
+                  <textarea name="comment" class="form-control" rows=5></textarea>
                   <input type="submit" class="btn btn-success pull-right" value="Post">
                 </form>
                 </div>
               </div>
           </div>
+          {% for replies in comment.comment_reply.all|dictsortreversed:"created_at" %}
+          <div class="container-fluid">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                {{replies.user.username}} at {{replies.created_at}} Replied to {{comment.author.username}}:
+              </div>
+              <div class="panel-body" style="min-height: 10rem;">
+                <p>{{replies.content}}</p>
+                {% if user.admin_level == 4 or user.id == replies.user.id %}
+                  <form action="{% url 'home:delete_replies' id=replies.id product_id=product.id %}" method='post'>
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger pull-right" value="Delete Comment">
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         {% endfor %}
           </div>
           <div role="tabpane2" class="tab-pane" id="category">

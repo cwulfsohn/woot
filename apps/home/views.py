@@ -279,7 +279,7 @@ def delete_specification(request, id, spec_id):
 def discussion(request, id):
     user = User.objects.get(id = request.session["id"])
     product = Product.objects.get(id = id)
-    comments = Comment.objects.filter(product=id).order_by("created_at")
+    comments = Comment.objects.filter(product=id).order_by("-created_at")
     category = Category.objects.filter(subcategories__products__id = id)
     main_category = Category.objects.get(subcategories__products__id = id)
     context = {
@@ -302,9 +302,26 @@ def comment(request):
         Comment.objects.AddComment(comment, product_id, user_id)
     return redirect(reverse('home:discussion', kwargs={'id':product_id}))
 
+def reply(request, id):
+    if request.method == 'POST':
+        comment_id = id
+        reply = request.POST['comment']
+        product_id = request.POST['product_id']
+        if len(reply) < 2:
+            messages.error(request, "Description does not meet length criteria")
+            return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+        user_id = request.session['id']
+        Replies.objects.AddReply(reply, product_id, user_id, comment_id)
+    return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
 def delete_comment(request, id, product_id):
     delete_comment = Comment.objects.get(id=id)
     delete_comment.delete()
+    return redirect(reverse('home:discussion', kwargs={'id':product_id}))
+
+def delete_replies(request, id, product_id):
+    delete_reply = Replies.objects.get(id=id)
+    delete_reply.delete()
     return redirect(reverse('home:discussion', kwargs={'id':product_id}))
 
 def rating(request, id):
