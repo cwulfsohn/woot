@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from .models import User
+from ..home.models import Product, Cart, Purchase, Order, Subcategory, Category
 
 
 def index(request):
@@ -128,7 +129,11 @@ def edit(request):
         user = User.objects.get(id=request.session['id'])
     except:
         redirect(reverse('home:index'))
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     context = {
-            "user":user
+            "user":user,
+            "categories":categories,
+            "subcategories":subcategories
     }
     return render(request, 'login/edit.html', context)

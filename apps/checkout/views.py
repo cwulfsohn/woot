@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from ..home.models import Product, Cart, Purchase, Order, Subcategory
+from ..home.models import Product, Cart, Purchase, Order, Subcategory, Category
 from ..login.models import User
 from django.db.models import Count
 from django.contrib import messages
@@ -34,14 +34,20 @@ def get_total(cart_products):
 def index(request):
     if "id" not in request.session:
         return redirect(reverse('login:index'))
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
     user = User.objects.get(id=request.session["id"])
     expireds = Product.objects.filter(products_cart__user=user).filter(products_cart__active=True).filter(active=False).distinct()
-    context = {"cart_products":cart_products, "total":total, "expireds":expireds}
+    context = {"cart_products":cart_products, "total":total, "expireds":expireds, "categories": categories, "subcategories": subcategories}
     return render(request, 'checkout/index.html', context)
 
 def add_cart(request, id):
+    if "id" not in request.session:
+        error = "You must be signed in to add products to your cart!"
+        messages.error(request, error)
+        return redirect(reverse('home:show_product', kwargs={'id':id}))
     if request.method == "POST":
         quantity = int(request.POST["quantity"])
         user = User.objects.get(id=request.session["id"])
@@ -64,6 +70,8 @@ def remove(request, id):
 def buy(request):
     if "id" not in request.session:
         return redirect(reverse('login:index'))
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     cart_products = get_cart_products(request)
     total = get_total(cart_products)
     try:
@@ -78,13 +86,20 @@ def buy(request):
                 "total":total,
                 "address":address,
                 "card":card,
+                "categories": categories,
+                "subcategories": subcategories
             }
     return render(request, 'checkout/buy.html', context)
 
 def address(request):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     user = User.objects.get(id=request.session["id"])
     addresses = Address.objects.filter(user=user)
-    context = {"addresses":addresses}
+    context = {"addresses":addresses,
+               "categories": categories,
+               "subcategories": subcategories
+}
     return render(request, 'checkout/address.html', context)
 
 
@@ -129,9 +144,13 @@ def select_card(request):
     return redirect(reverse('checkout:buy'))
 
 def billing(request):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     user = User.objects.get(id=request.session["id"])
     cards = CreditCard.objects.filter(user=user)
-    context = {"cards":cards}
+    context = {"cards":cards,
+               "categories": categories,
+               "subcategories": subcategories}
     return render(request, 'checkout/billing.html', context)
 
 def add_card(request):
@@ -204,14 +223,17 @@ def purchase(request):
     return redirect(reverse('checkout:success'))
 
 def success(request):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     user = User.objects.get(id=request.session["id"])
     order = Order.objects.filter(user=user).order_by('-id')[0]
     products = Product.objects.filter(product_purchase__order=order)
     saved = 0
     total = 0
-    other_products = Product.objects.filter(subcategory=products[0].subcategory).exclude(id=products[0].id)[:6]
+    other_products = Product.objects.filter(subcategory=products[0].subcategory).exclude(id=products[0].id).exclude(active=False)[:6]
     for product in products:
         saved += product.list_price - product.price
         total += product.price
-    context = {"order":order, "products":products, "saved":saved, "other_products":other_products, "total":total}
+    context = {"order":order, "products":products, "saved":saved, "other_products":other_products, "total":total, "categories": categories,
+    "subcategories": subcategories}
     return render(request, 'checkout/success.html', context)

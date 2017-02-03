@@ -38,6 +38,9 @@ def index(request):
     deal_images = Image.objects.filter(product = daily_deal)
     comments = Comment.objects.filter(product = daily_deal).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(daily_deal.price, daily_deal.list_price)
+    bestsellers = Product.objects.annotate(sold=Count('product_purchase__product_id')).exclude(id = daily_deal.id).order_by('-sold')[:4]
+    new_items = Product.objects.exclude(id= daily_deal.id).order_by('-created_at')[:4]
+    last_chance = Product.objects.exclude(id = daily_deal.id).filter(quantity__gt=0).order_by('quantity')[:4]
     context = {'categories': categories,
                'subcategories': subcategories,
                'daily_deal': daily_deal,
@@ -45,6 +48,9 @@ def index(request):
                'percent_off': percent_off,
                'comments': comments,
                'today': today,
+               'bestsellers': bestsellers,
+               'new_items': new_items,
+               'last_chance': last_chance,
                }
     return render(request, 'home/index.html', context)
 
@@ -166,18 +172,21 @@ def subcategory(request, id):
     return render(request, 'home/subcategory.html', context)
 
 def show_product(request, id):
-    # try:
-    cart_products = get_cart_products(request)
+    try:
+        cart_products = get_cart_products(request)
+    except KeyError:
+        cart_products = False
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     if product.active == False:
         return redirect(reverse('home:index'))
     over = False
-    for cart_product in cart_products:
-        if cart_product["id"] == int(id):
-            if cart_product["quantity"] >= product.quantity:
-                over = True
+    if cart_products:
+        for cart_product in cart_products:
+            if cart_product["id"] == int(id):
+                if cart_product["quantity"] >= product.quantity:
+                    over = True
     images = Image.objects.filter(product=product)
     comments = Comment.objects.filter(product = product).order_by('-created_at')[:2]
     percent_off = Product.objects.percent_off(product.price, product.list_price)
@@ -283,12 +292,16 @@ def delete_specification(request, id, spec_id):
     return redirect(reverse('home:specifications', kwargs={'id':id}))
 
 def discussion(request, id):
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     user = User.objects.get(id = request.session["id"])
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=id).order_by("created_at")
     category = Category.objects.filter(subcategories__products__id = id)
     main_category = Category.objects.get(subcategories__products__id = id)
     context = {
+        'categories': categories,
+        'subcategories': subcategories,
         'user':user,
         'product':product,
         'comments':comments,

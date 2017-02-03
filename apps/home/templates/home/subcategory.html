@@ -35,7 +35,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle lighter-font white-text" data-toggle="dropdown">Hi, <span class="underline light-font">{{ request.session.username }}</span><b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url 'login:edit' %}">Your Account</a></li>
+                <li><a href="{% url 'login:edit' %}">Edit Your Account</a></li>
                 <li class="divider"></li>
                 <li><a href="#">Stuff You've Bought</a></li>
                 <li class="divider"></li>
@@ -72,11 +72,9 @@
             </li>
             {% endfor %}
             <li class="dropdown">
-              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: X Items</a>
+              <a id="cart" href="#" class="dropdown-toggle categories white-text" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-shopping-cart cart" aria-hidden="true"></span> - Cart: {{request.session.cart}} Items</a>
               <ul class="dropdown-menu collapse">
-                <li><a href="#">{{ items }}</a></li>
-                <li><a href="#"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
-                <li><a class="text-center" href="#">View your cart</a></li>
+                <li><a href="{% url 'checkout:buy' %}"><button class="btn btn-lg btn-warning">Proceed to Checkout</button></a></li>
               </ul>
             </li>
         </div>
@@ -113,7 +111,8 @@
           </div>
         </a>
         {% endfor %}
-    </div> <!-- /container -->
+      </div>
+    </div><!-- /container -->
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
