@@ -11,6 +11,14 @@
   color:#FFFFFF !important;
 }
 
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #FFF
+}
+
+.navbar-default .navbar-toggle:active, .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus  {
+  background-color: #5A9525
+}
+
 #categories {
   min-width: 1200px;
 }
@@ -21,10 +29,6 @@
 }
 
 .navbar .nav > li > a {
-  color: #FFFFFF;
-}
-
-.navbar > a {
   color: #FFFFFF;
 }
 
@@ -41,10 +45,6 @@
   font-weight: 500
 }
 
-.dropdown-font {
-  color: #000000
-}
-
 #cart {
   margin: 10px 0px 0px 15px;
   padding: 0px
@@ -53,11 +53,6 @@
 .cart {
   font-size: 2em;
 }
-
-.navbar-nav>li>.dropdown-menu{
-  background-color: #5A9525;
-}
-
 
 .navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a,
@@ -68,30 +63,11 @@
    border-color: #fff;
 }
 
-@media (max-width: 767px)
-.navbar-default .navbar-nav .open .dropdown-menu>li>a, {
-    color: #000;
-}
-
-@media (max-width: 767px)
-.navbar-nav .open .dropdown-menu .dropdown-header, .navbar-nav .open .dropdown-menu>li>a {
-    color: #000;
-}
-
 @media screen and (min-width: 768px) {
 
 .custom-collapse .collapse{
             display:block;
       }
-
-.dropdown-toggle:active, .open .dropdown-toggle, .dropdown:hover {
-    color: #FFF !important;
-}
-
-/* Changes the color of link text <a> after navbar has collapsed for small screen or mobile mode */
-#categories > ul > li > ul > li {
-    color: #FFF !important;;
-}
 
 }
 
@@ -116,18 +92,7 @@
     .navbar-nav>li {
         float: none;
     }
-    .navbar-nav>li>a {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        color: #FFF
-    }
 
-    .navbar .nav > li.dropdown.open.active > a:hover,
-    .navbar .nav > li.dropdown.open > a,
-    .navbar .nav > li.dropdown.open > ul.dropdown-menu > li > a:hover
-    .navbar-text {
-        color: #FFF
-    }
     /* since 3.1.0 */
     .navbar-collapse.collapse.in {
         display: block!important;
@@ -135,9 +100,6 @@
     .collapsing {
         overflow: hidden!important;
     }
-
-    .dropdown-menu>li>a {
-      color: #fff;
 
     body {
       margin-top: 50px
