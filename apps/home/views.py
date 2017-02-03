@@ -253,11 +253,9 @@ def show_product(request, id):
             count += 1
         holder = []
         holder.append(category_products.name)
-        try:
+        if count > 0:
             holder.append(float(float(count)/float(category_count)))
             product_percent.append(holder)
-        except:
-            pass
     show_item = 0
     for purchases in Purchase.objects.filter(product_id = product_id.id):
         show_item += 1
@@ -342,13 +340,16 @@ def add_specification(request, id):
             return redirect(reverse('home:specifications', kwargs={'id':id}))
         try:
             if SpecificationCategories.objects.get(category = check_category):
-                messages.error(request, "Category is already created")
+                messages.error(request, "Specification header is already created")
                 return redirect(reverse('home:specifications', kwargs={'id':id}))
         except:
             try:
                 checked =  request.POST['add_spec_header']
                 if checked:
                     category = request.POST['specification_header']
+                    if len(category) < 2:
+                        messages.error(request, "Specification header does not fit criteria")
+                        return redirect(reverse('home:specifications', kwargs={'id':id}))
                     SpecificationCategories.objects.create(category = category)
                     category_id = SpecificationCategories.objects.get(category = category)
                     product = Product.objects.get(id = id)
@@ -356,6 +357,7 @@ def add_specification(request, id):
             except:
                 category = request.POST['specification_select']
                 if category == "revert":
+                    messages.error(request, "Specification header needs to be selected")
                     return redirect(reverse('home:specifications', kwargs={'id':id}))
                 else:
                     category_id = SpecificationCategories.objects.get(category = category)
