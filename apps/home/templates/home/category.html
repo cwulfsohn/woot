@@ -92,7 +92,7 @@
         <ul class="list-unstyled list-group">
           <li class="list-group-item-heading">All (number here)</li>
           {% for subcat in this_cat_subcategories %}
-          <li class="list-group-item-heading">&nbsp;&nbsp;<a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({{ subcat.products.count }})</a></li>
+          <li class="list-group-item-heading">&nbsp;&nbsp;<a href="{% url 'home:subcategory' id=subcat.id %}">{{ subcat.subcategory }} ({% for id, count in total_products.items %}{% if id == subcat.id %}{{ count }}{% endif %}{% endfor %})</a></li>
           {% endfor %}
         </ul>
       </div>
