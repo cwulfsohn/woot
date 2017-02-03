@@ -40,9 +40,15 @@
                 <div class="form-group">
                   <textarea id="textarea_width" class="form-control" rows=6 name='comment'></textarea>
                 </div>
+                {% if user %}
                 <div class="form-group">
                   <input type='submit'class="btn btn-success pull-right" value='Post'>
                 </div>
+                {% else %}
+                <div class="form-group">
+                  <input type='submit'class="btn btn-success pull-right" value='Sign In to Post'>
+                </div>
+                {% endif %}
               </form>
             </div>
             <hr>
