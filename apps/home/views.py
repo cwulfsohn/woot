@@ -180,7 +180,9 @@ def show_product(request, id):
     subcategories = Subcategory.objects.all()
     product = Product.objects.get(id=id)
     if product.active == False:
-        return redirect(reverse('home:index'))
+        active = False
+    else:
+        active = True
     over = False
     if cart_products:
         for cart_product in cart_products:
@@ -212,7 +214,8 @@ def show_product(request, id):
                'avg_rating': avg_rating,
                'features': features,
                'specifications': specifications,
-               "over":over
+               'over':over,
+               'active': active,
                }
     return render(request, 'home/product.html', context)
     # except:

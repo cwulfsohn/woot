@@ -113,7 +113,11 @@
               </select>
               {% endif %}
               <p>Shipping: <strong>Standard</strong></p>
+              {% if active %}
               <input class=" btn btn-lg btn-warning" type="submit" value="Add To Cart">
+              {% else %}
+              <span class=" btn btn-lg btn-danger">Sold Out!</span>
+              {% endif %}
             </form>
             <hr>
             {% if not rated %}
