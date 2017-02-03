@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
 from .models import *
 from .forms import ImageUploadForm
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.contrib import messages
 from django.db.models import Count
 from django.db.models import Avg
 import json
+import calendar
 
 def get_cart_products(request):
     user = User.objects.get(id=request.session["id"])
@@ -33,6 +34,8 @@ def index(request):
     today = datetime.now().date()
     try:
         daily_deal = Product.objects.get(daily_deal=True, deal_date = today)
+        daily_deal.active = True
+        daily_deal.save()
     except:
         daily_deal = Product.objects.filter(daily_deal=True, active = True, quantity__gt=0).order_by('expire_date')[:1]
         daily_deal = daily_deal[0]
@@ -529,3 +532,45 @@ def order(request, id):
         total =+ product["price"]
     context = {"order":order, "order_basket":order_basket, "total":total}
     return render(request, 'home/order.html', context)
+
+def daily_deals(request):
+    if not request.session["admin_level"] == 4:
+        return redirect(reverse('home:index'))
+    days = []
+    for i in range(30):
+        new_date = date.today() + timedelta(i)
+        days.append(new_date)
+    deals = Product.objects.filter(daily_deal=True)
+    deal_days = []
+    for deal in deals:
+        deal.deal_date = deal.deal_date.date()
+        print deal.deal_date
+    for day in days:
+        deal_day = {'day':day}
+        for deal in deals:
+            if deal.deal_date == day:
+                deal_day["deal"] = deal
+                print deal.name
+        deal_days.append(deal_day)
+    context = {"deal_days":deal_days, "days":days, "deals":deals}
+    return render(request, 'home/daily_deals.html', context)
+
+def remove_deal(request, id):
+    if not request.method == "POST":
+        return redirect(reverse('home:index'))
+    Product.objects.filter(id=id).update(daily_deal=False)
+    return redirect(reverse('home:daily_deals'))
+
+def change_deal(request, id):
+    if not request.method == "POST":
+        return redirect(reverse('home:index'))
+    product = Product.objects.get(id=id)
+    deal_date = datetime.strptime(request.POST["deal_date"], "%b. %d, %Y")
+    print deal_date
+    switch_product = Product.objects.filter(deal_date=deal_date)
+    if switch_product:
+        Product.objects.filter(deal_date=deal_date).update(deal_date=product.deal_date)
+
+    product.deal_date = deal_date
+    product.save()
+    return redirect(reverse('home:daily_deals'))
